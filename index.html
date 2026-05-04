@@ -1,582 +1,1648 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master AE Command Center | Microsoft</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .hidden { display: none !important; }
-        .tag-active { background-color: #2563EB; color: white; border-color: #2563EB; }
-        .comp-active { background-color: #DC2626; color: white; border-color: #DC2626; }
-        
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master AE Command Center | Microsoft</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-300:#cbd5e1;
+  --slate-400:#94a3b8; --slate-500:#64748b; --slate-600:#475569; --slate-700:#334155;
+  --slate-800:#1e293b; --slate-900:#0f172a; --slate-950:#020617;
+  --blue-50:#eff6ff;  --blue-100:#dbeafe; --blue-200:#bfdbfe; --blue-400:#60a5fa;
+  --blue-500:#3b82f6; --blue-600:#2563eb; --blue-700:#1d4ed8; --blue-800:#1e40af; --blue-900:#1e3a8a;
+  --emerald-50:#ecfdf5;  --emerald-100:#d1fae5; --emerald-200:#a7f3d0;
+  --emerald-500:#10b981; --emerald-600:#059669; --emerald-700:#047857;
+  --emerald-800:#065f46; --emerald-900:#064e3b;
+  --rose-50:#fff1f2;  --rose-100:#ffe4e6; --rose-200:#fecdd3;
+  --rose-500:#f43f5e; --rose-600:#e11d48; --rose-700:#be123c;
+  --rose-800:#9f1239; --rose-900:#881337;
+  --red-50:#fef2f2;   --red-100:#fee2e2;  --red-600:#dc2626; --red-700:#b91c1c;
+  --amber-50:#fffbeb; --amber-100:#fef3c7; --amber-200:#fde68a;
+  --amber-600:#d97706; --amber-700:#b45309; --amber-800:#92400e; --amber-900:#78350f;
+  --green-600:#16a34a; --purple-600:#9333ea;
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,.1), 0 8px 10px -6px rgba(0,0,0,.06);
+  --shadow-xl: 0 20px 40px -10px rgba(0,0,0,.2);
+  --radius: 6px; --radius-lg: 10px; --radius-xl: 14px; --radius-full: 9999px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--slate-50); color: var(--slate-800);
+  height: 100vh; display: flex; overflow: hidden;
+  font-size: 14px; line-height: 1.5;
+}
+h1, h2, h3, h4, h5, p { margin: 0; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; color: inherit; }
+ul { margin: 0; padding: 0; list-style: none; }
+table { border-collapse: collapse; }
+input { font-family: inherit; }
+.hidden { display: none !important; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--slate-400); }
+
+/* SIDEBAR */
+.sidebar { width: 256px; background: var(--slate-900); color: white; display: flex; flex-direction: column; box-shadow: var(--shadow-xl); z-index: 20; flex-shrink: 0; }
+.sidebar__header { padding: 24px; border-bottom: 1px solid var(--slate-800); }
+.sidebar__brand { font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--blue-400); }
+.sidebar__sub { font-size: 11px; color: var(--slate-400); margin-top: 4px; }
+.sidebar__body { flex: 1; overflow-y: auto; padding: 16px 0; }
+.sidebar__section-label { padding: 0 16px; margin-bottom: 8px; font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 1px; }
+.sidebar__nav { padding: 0 16px; margin-bottom: 32px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar__footer { padding: 16px; border-top: 1px solid var(--slate-800); background: var(--slate-950); }
+.sidebar__footer-label { font-size: 13px; font-weight: 600; }
+.sidebar__footer-sub { font-size: 11px; color: var(--slate-400); }
+
+.nav-btn { width: 100%; text-align: left; padding: 10px 16px; border-radius: var(--radius); color: var(--slate-300); font-size: 13px; font-weight: 500; transition: background .15s, color .15s, border-color .15s; }
+.nav-btn:hover { background: var(--slate-800); }
+.nav-btn.is-active { background: var(--blue-600); color: white; }
+.nav-btn--customer { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--slate-700); }
+.nav-btn--customer:hover { border-color: var(--blue-500); }
+.nav-btn--customer.is-active { background: var(--slate-800); border-color: var(--blue-500); color: white; }
+.nav-btn__pill { background: var(--blue-500); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; flex-shrink: 0; }
+.sidebar__hint { padding: 0 16px; font-size: 11px; color: var(--slate-500); font-style: italic; }
+
+.main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background: var(--slate-50); position: relative; }
+
+/* HEADERS */
+.page-header { background: white; border-bottom: 1px solid var(--slate-200); padding: 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); z-index: 10; position: sticky; top: 0; }
+.page-header__title { font-size: 22px; font-weight: 700; color: var(--slate-900); }
+.page-header__sub { font-size: 13px; color: var(--slate-500); }
+.metrics-row { display: flex; gap: 24px; font-size: 13px; }
+.metric { text-align: right; }
+.metric + .metric { border-left: 1px solid var(--slate-200); padding-left: 24px; }
+.metric__label { color: var(--slate-500); font-weight: 500; }
+.metric__value { font-size: 20px; font-weight: 700; color: var(--slate-800); margin-top: 2px; }
+.metric__value--green { color: var(--green-600); }
+.metric__value--blue  { color: var(--blue-600);  }
+
+.page-header--customer { align-items: flex-start; }
+.customer-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.customer-title { font-size: 28px; font-weight: 700; color: var(--slate-900); }
+.customer-meta { font-size: 13px; color: var(--slate-500); }
+.customer-stats { display: flex; gap: 24px; font-size: 13px; background: var(--slate-50); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--slate-200); }
+.customer-stat__label { color: var(--slate-500); font-weight: 600; margin-bottom: 4px; }
+.customer-stat__value { font-weight: 700; font-size: 17px; }
+.customer-stat__value--red   { color: var(--red-600); }
+.customer-stat__value--green { color: var(--green-600); }
+.customer-stat__value--blue  { color: var(--blue-600); }
+.customer-stat__value--amber { color: var(--amber-700); }
+.customer-stat + .customer-stat { border-left: 1px solid var(--slate-200); padding-left: 24px; }
+
+.back-link { font-size: 12px; color: var(--blue-600); font-weight: 600; cursor: pointer; margin-bottom: 6px; display: inline-block; }
+.back-link:hover { text-decoration: underline; }
+
+/* CONTENT GRIDS */
+.content { padding: 32px; padding-bottom: 80px; }
+.grid { display: grid; gap: 24px; }
+.grid--2 { grid-template-columns: repeat(2, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+.grid--4 { grid-template-columns: repeat(4, 1fr); }
+.col-span-2 { grid-column: span 2; }
+
+/* CARDS */
+.card { background: white; padding: 24px; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); border: 1px solid var(--slate-200); }
+.card--accent { border-top: 4px solid var(--blue-600); border-color: var(--blue-200); }
+.card__header { font-size: 17px; font-weight: 700; color: var(--slate-900); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--slate-100); display: flex; align-items: center; gap: 8px; }
+.card__sub { font-size: 13px; color: var(--slate-500); margin-bottom: 20px; }
+
+/* TASKS */
+.task-list { display: flex; flex-direction: column; gap: 16px; }
+.task { border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 16px; transition: border-color .15s; }
+.task:hover { border-color: var(--blue-200); }
+.task__row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.task__main { display: flex; align-items: flex-start; flex: 1; }
+.task__check { margin: 4px 16px 0 0; width: 18px; height: 18px; accent-color: var(--blue-600); cursor: pointer; }
+.task__title { font-weight: 700; color: var(--slate-800); transition: color .15s; }
+.task__title--link { cursor: pointer; }
+.task__title--link:hover .task__title { color: var(--blue-600); }
+.task__sub { font-size: 13px; color: var(--slate-500); margin-top: 2px; }
+
+.expand-btn { flex-shrink: 0; font-size: 12px; font-weight: 600; background: var(--blue-50); color: var(--blue-700); border: 1px solid var(--blue-200); padding: 6px 12px; border-radius: var(--radius); transition: background .15s; white-space: nowrap; }
+.expand-btn:hover { background: var(--blue-100); }
+.expand-btn .chevron { display: inline-block; transition: transform .2s; }
+.expand-btn.is-open .chevron { transform: rotate(180deg); }
+
+.strategy-detail { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--slate-200); display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.strategy-detail__title { font-weight: 700; color: var(--slate-800); font-size: 13px; margin-bottom: 8px; }
+.strategy-detail__list { font-size: 13px; color: var(--slate-700); line-height: 1.6; padding-left: 20px; list-style: disc; }
+.strategy-detail__list li + li { margin-top: 6px; }
+.strategy-detail__sidebar { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 12px; }
+.strategy-detail__sidebar--partner { background: var(--emerald-50); border-color: var(--emerald-200); }
+.strategy-detail__sidebar-label { font-size: 10px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.strategy-detail__sidebar-name { font-size: 13px; font-weight: 600; color: var(--blue-700); }
+.strategy-detail__sidebar-name + .strategy-detail__sidebar-name { margin-top: 4px; }
+.strategy-detail__sidebar-name--emerald { color: var(--emerald-700); }
+
+/* MARKET SIGNALS */
+.signals { display: flex; flex-direction: column; gap: 16px; }
+.signal { padding: 16px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.signal--blue { background: var(--blue-50); border: 1px solid var(--blue-100); }
+.signal--red  { background: var(--red-50);  border: 1px solid var(--red-100);  }
+.signal__eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.signal--blue .signal__eyebrow { color: var(--blue-700); }
+.signal--red  .signal__eyebrow { color: var(--red-700);  }
+.signal__eyebrow .dot { color: var(--slate-400); margin: 0 4px; }
+.signal__headline { font-size: 13px; font-weight: 700; color: var(--slate-800); }
+.signal-btn { margin-top: 12px; padding-top: 12px; width: 100%; text-align: left; font-size: 12px; font-weight: 600; transition: color .15s; }
+.signal--blue .signal-btn { border-top: 1px solid var(--blue-100); color: var(--blue-700); }
+.signal--blue .signal-btn:hover { color: var(--blue-900); }
+.signal--red  .signal-btn { border-top: 1px solid var(--red-100);  color: var(--red-700);  }
+.signal--red  .signal-btn:hover { filter: brightness(.7); }
+.signal-detail { margin-top: 8px; font-size: 12px; color: var(--slate-700); background: white; padding: 12px; border-radius: var(--radius); }
+.signal--blue .signal-detail { border: 1px solid var(--blue-100); }
+.signal--red  .signal-detail { border: 1px solid var(--red-100);  }
+.signal-detail strong.action--blue { color: var(--blue-900); }
+.signal-detail strong.action--red  { color: var(--red-700); }
+
+/* PORTFOLIO */
+.stat-card { background: white; padding: 20px; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); border: 1px solid var(--slate-200); }
+.stat-card--blue    { border-color: var(--blue-200); }
+.stat-card--emerald { border-color: var(--emerald-200); }
+.stat-card--amber   { border-color: var(--amber-200); }
+.stat-card__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--slate-500); }
+.stat-card--blue    .stat-card__label { color: var(--blue-600); }
+.stat-card--emerald .stat-card__label { color: var(--emerald-600); }
+.stat-card--amber   .stat-card__label { color: var(--amber-600); }
+.stat-card__value { font-size: 28px; font-weight: 900; margin-top: 8px; color: var(--slate-900); }
+.stat-card--blue    .stat-card__value { color: var(--blue-700); }
+.stat-card--emerald .stat-card__value { color: var(--emerald-700); }
+.stat-card--amber   .stat-card__value { color: var(--amber-700); }
+
+.filter-bar { background: white; padding: 16px; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); border: 1px solid var(--slate-200); margin-bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.filter-search { flex: 1; min-width: 240px; padding: 8px 14px; border: 1px solid var(--slate-300); border-radius: var(--radius); font-size: 13px; outline: none; transition: border-color .15s, box-shadow .15s; }
+.filter-search:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px var(--blue-100); }
+.filter-group { display: flex; align-items: center; gap: 4px; }
+.filter-group__label { font-size: 11px; color: var(--slate-500); font-weight: 600; margin-right: 8px; }
+.filter-btn { padding: 6px 12px; font-size: 11px; font-weight: 600; border: 1px solid var(--slate-300); border-radius: var(--radius); background: white; transition: background .15s, color .15s, border-color .15s; }
+.filter-btn:hover { border-color: var(--slate-400); }
+.filter-btn.is-active { background: var(--slate-800); color: white; border-color: var(--slate-800); }
+
+.table-wrapper { background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); border: 1px solid var(--slate-200); overflow: hidden; }
+.table-wrapper__top { padding: 16px; border-bottom: 1px solid var(--slate-100); display: flex; justify-content: space-between; align-items: center; }
+.table-wrapper__title { font-size: 13px; font-weight: 700; color: var(--slate-700); }
+.table-wrapper__sub   { font-size: 12px; color: var(--slate-500); }
+.table-scroll { overflow-x: auto; }
+
+.data-table { width: 100%; }
+.data-table thead tr { background: var(--slate-50); font-size: 11px; color: var(--slate-500); text-transform: uppercase; letter-spacing: 1px; }
+.data-table th { padding: 16px; border-bottom: 1px solid var(--slate-200); font-weight: 600; text-align: left; }
+.data-table th.sortable { cursor: pointer; transition: background .15s; }
+.data-table th.sortable:hover { background: var(--slate-100); }
+.data-table tbody { font-size: 13px; }
+.data-table td { padding: 16px; border-bottom: 1px solid var(--slate-100); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr.row--clickable { cursor: pointer; transition: background .15s; }
+.data-table tr.row--clickable:hover { background: var(--blue-50); }
+
+.row__name { display: flex; align-items: center; font-weight: 600; color: var(--slate-800); }
+.row__dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.row__dot--healthy { background: var(--emerald-500); }
+.row__dot--watch   { background: var(--amber-600); }
+.row__dot--risk    { background: var(--rose-500); }
+.row__money { font-weight: 700; color: var(--emerald-600); }
+.row__renewal--rose  { color: var(--rose-600);  font-weight: 700; }
+.row__renewal--amber { color: var(--amber-600); font-weight: 600; }
+.row__renewal--slate { color: var(--slate-600); }
+.row__empty { padding: 32px; text-align: center; color: var(--slate-400); }
+
+/* BADGES */
+.badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.badge--blue    { background: var(--blue-100);    color: var(--blue-800); }
+.badge--emerald { background: var(--emerald-100); color: var(--emerald-800); }
+.badge--slate   { background: var(--slate-100);   color: var(--slate-600); }
+.badge--rose    { background: var(--rose-100);    color: var(--rose-700); }
+.badge--amber   { background: var(--amber-100);   color: var(--amber-700); }
+
+.health-badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.health-badge--healthy { background: var(--emerald-100); color: var(--emerald-700); }
+.health-badge--watch   { background: var(--amber-100);   color: var(--amber-700); }
+.health-badge--risk    { background: var(--rose-100);    color: var(--rose-700); }
+
+.tier-badge { display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; }
+.tier-badge--1 { background: var(--blue-100); color: var(--blue-800); }
+.tier-badge--2 { background: var(--emerald-100); color: var(--emerald-800); }
+.tier-badge--3 { background: var(--slate-100); color: var(--slate-600); }
+
+.pill { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: var(--radius); border: 1px solid; }
+.pill--blue    { background: var(--blue-50);    color: var(--blue-700);    border-color: var(--blue-200); }
+.pill--emerald { background: var(--emerald-50); color: var(--emerald-700); border-color: var(--emerald-200); }
+.pill--strategic { background: var(--blue-100); color: var(--blue-800); padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.pill--strategic-2 { background: var(--emerald-100); color: var(--emerald-800); padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.pill--strategic-3 { background: var(--slate-100); color: var(--slate-600); padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+/* WHITESPACE */
+.section-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.section-title { font-size: 17px; font-weight: 700; color: var(--slate-800); }
+.section-sub   { font-size: 13px; color: var(--slate-500); }
+
+.ws-list { display: flex; flex-direction: column; gap: 16px; }
+.ws-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--slate-50); border-radius: var(--radius-lg); border: 1px solid var(--slate-100); transition: border-color .15s; }
+.ws-item--clickable { cursor: pointer; }
+.ws-item--clickable:hover { border-color: var(--blue-200); }
+.ws-item__name { font-weight: 700; color: var(--slate-800); }
+.ws-item__sub  { font-size: 12px; color: var(--slate-500); margin-top: 4px; }
+.ws-item__amt  { font-size: 17px; font-weight: 700; }
+.ws-item__amt--green { color: var(--green-600); }
+.ws-item__amt--blue  { color: var(--blue-600); }
+.ws-item__target { font-size: 10px; font-weight: 700; color: var(--slate-400); text-transform: uppercase; margin-top: 4px; text-align: right; }
+
+/* FORECAST */
+.chart-container { height: 288px; }
+.bucket { padding: 24px; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+.bucket--commit { background: var(--emerald-50); border: 1px solid var(--emerald-200); }
+.bucket--upside { background: var(--amber-50);   border: 1px solid var(--amber-200); }
+.bucket__ghost { position: absolute; top: 0; right: 0; padding: 16px; font-size: 64px; font-weight: 900; opacity: .1; }
+.bucket--commit .bucket__ghost { color: var(--emerald-600); }
+.bucket--upside .bucket__ghost { color: var(--amber-600);   }
+.bucket__title { font-size: 17px; font-weight: 700; }
+.bucket--commit .bucket__title { color: var(--emerald-900); }
+.bucket--upside .bucket__title { color: var(--amber-900);   }
+.bucket__sub { font-size: 13px; margin-bottom: 16px; }
+.bucket--commit .bucket__sub { color: var(--emerald-700); }
+.bucket--upside .bucket__sub { color: var(--amber-700);   }
+.bucket__amount { font-size: 36px; font-weight: 900; }
+.bucket--commit .bucket__amount { color: var(--emerald-600); }
+.bucket--upside .bucket__amount { color: var(--amber-600);   }
+
+/* VELOCITY */
+.velocity-banner { background: var(--rose-50); border-left: 4px solid var(--rose-600); border-top: 1px solid var(--rose-100); border-right: 1px solid var(--rose-100); border-bottom: 1px solid var(--rose-100); padding: 32px; border-radius: 0 var(--radius-xl) var(--radius-xl) 0; box-shadow: var(--shadow-sm); }
+.velocity-banner__title-row { display: flex; align-items: center; margin-bottom: 8px; }
+.velocity-banner__icon { font-size: 24px; margin-right: 12px; }
+.velocity-banner__title { font-size: 24px; font-weight: 700; color: var(--rose-900); }
+.velocity-banner__intro { color: var(--rose-700); font-size: 15px; margin-bottom: 32px; margin-left: 36px; max-width: 720px; }
+.velocity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-left: 36px; }
+.velocity-play { background: white; padding: 24px; border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); border: 1px solid var(--rose-100); transition: box-shadow .15s; }
+.velocity-play:hover { box-shadow: var(--shadow-md); }
+.velocity-play__tag { display: inline-block; background: var(--rose-100); color: var(--rose-800); font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: var(--radius); text-transform: uppercase; letter-spacing: 1px; }
+.velocity-play__title { font-size: 17px; font-weight: 700; color: var(--slate-800); margin-top: 12px; }
+.velocity-play__body  { font-size: 13px; color: var(--slate-600); margin-top: 8px; line-height: 1.6; }
+
+/* CUSTOMER 360 */
+.chip { padding: 8px 16px; border-radius: var(--radius-full); border: 1px solid var(--slate-300); font-size: 13px; font-weight: 600; color: var(--slate-700); background: white; transition: border-color .15s, background .15s, color .15s; }
+.chip:hover { border-color: var(--blue-500); }
+.chip--competitor { background: var(--rose-50); color: var(--rose-700); border-color: var(--rose-200); box-shadow: var(--shadow-sm); }
+.chip--competitor:hover { background: var(--rose-100); }
+.chip.tag-active { background: var(--blue-600); color: white; border-color: var(--blue-600); }
+.chip.comp-active { background: var(--red-600); color: white; border-color: var(--red-600); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+
+.playbook { background: var(--slate-50); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--slate-200); }
+.playbook__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--slate-200); }
+.playbook__title { font-weight: 700; color: var(--blue-900); font-size: 17px; }
+.playbook__pitch { font-size: 15px; color: var(--slate-700); line-height: 1.7; }
+.playbook__meta { margin-top: 24px; background: white; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--slate-200); display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center; box-shadow: var(--shadow-sm); }
+.playbook__meta-cell:nth-child(2) { border-left: 1px solid var(--slate-100); border-right: 1px solid var(--slate-100); }
+.playbook__meta-label { font-size: 10px; font-weight: 700; color: var(--slate-400); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.playbook__meta-value { font-size: 17px; font-weight: 700; color: var(--slate-800); }
+.playbook__meta-value--blue    { color: var(--blue-600);    }
+.playbook__meta-value--emerald { color: var(--emerald-600); }
+
+/* SITUATION CALLOUT */
+.situation { background: linear-gradient(135deg, var(--blue-50), var(--emerald-50)); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--blue-100); margin-bottom: 16px; }
+.situation--watch { background: linear-gradient(135deg, var(--amber-50), var(--blue-50)); border-color: var(--amber-200); }
+.situation--risk  { background: linear-gradient(135deg, var(--rose-50), var(--blue-50)); border-color: var(--rose-200); }
+.situation__label { font-size: 10px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.situation__headline { font-size: 16px; font-weight: 700; color: var(--slate-900); margin-bottom: 8px; }
+.situation__detail { font-size: 13px; color: var(--slate-700); line-height: 1.6; }
+
+/* DEAL CARD */
+.deal-card { background: var(--blue-600); color: white; padding: 20px; border-radius: var(--radius-lg); }
+.deal-card__label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.7); margin-bottom: 8px; }
+.deal-card__name { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+.deal-card__metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.2); }
+.deal-card__metric-label { font-size: 10px; color: rgba(255,255,255,.7); }
+.deal-card__metric-value { font-size: 14px; font-weight: 700; }
+
+/* TIMELINE */
+.timeline { position: relative; }
+.timeline::before { content: ''; position: absolute; top: 0; bottom: 0; left: 20px; width: 2px; background: linear-gradient(to bottom, transparent, var(--slate-300), transparent); }
+.timeline-item { position: relative; padding-left: 64px; padding-bottom: 24px; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-icon { position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; border: 4px solid white; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); z-index: 1; }
+.timeline-icon--blue { background: var(--blue-500); color: white; }
+.timeline-icon--gray { background: var(--slate-200); color: var(--slate-600); }
+.timeline-card { background: white; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--slate-200); box-shadow: var(--shadow-sm); }
+.timeline-card__head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.timeline-card__title { font-weight: 700; color: var(--slate-900); font-size: 13px; }
+.timeline-card__time { font-size: 11px; font-weight: 600; color: var(--slate-400); }
+.timeline-card__time--badge { background: var(--blue-50); color: var(--blue-600); font-weight: 700; padding: 2px 8px; border-radius: var(--radius); }
+.timeline-card__body { font-size: 13px; color: var(--slate-600); }
+
+.btn-secondary { background: var(--slate-100); color: var(--slate-700); padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: var(--radius); border: 1px solid var(--slate-200); transition: background .15s; }
+.btn-secondary:hover { background: var(--slate-200); }
+
+/* MEDDPICC */
+.meddpicc { display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+.meddpicc__row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: var(--radius); }
+.meddpicc__row--green  { background: var(--emerald-50); border: 1px solid var(--emerald-100); }
+.meddpicc__row--amber  { background: var(--amber-50);   border: 1px solid var(--amber-200); }
+.meddpicc__row--rose   { background: var(--rose-50);    border: 1px solid var(--rose-200); }
+.meddpicc__label { font-weight: 700; }
+.meddpicc__row--green .meddpicc__label { color: var(--emerald-900); }
+.meddpicc__row--amber .meddpicc__label { color: var(--amber-900); }
+.meddpicc__row--rose  .meddpicc__label { color: var(--rose-900); }
+.meddpicc__pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: var(--radius); }
+.meddpicc__pill--green { background: var(--emerald-200); color: var(--emerald-800); }
+.meddpicc__pill--amber { background: var(--amber-200);   color: var(--amber-800);  }
+.meddpicc__pill--rose  { background: var(--rose-200);    color: var(--rose-800);   }
+
+/* STAKEHOLDERS / VTEAM */
+.stakeholders { display: flex; flex-direction: column; gap: 12px; }
+.stakeholder { padding: 12px; border-radius: var(--radius); border: 1px solid; position: relative; overflow: hidden; }
+.stakeholder::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 4px; }
+.stakeholder--emerald { background: var(--emerald-50); border-color: var(--emerald-200); }
+.stakeholder--emerald::after { background: var(--emerald-500); }
+.stakeholder--blue    { background: var(--blue-50);    border-color: var(--blue-200); }
+.stakeholder--blue::after    { background: var(--blue-500); }
+.stakeholder--rose    { background: var(--rose-50);    border-color: var(--rose-200); }
+.stakeholder--rose::after    { background: var(--rose-500); }
+.stakeholder--amber   { background: var(--amber-50);   border-color: var(--amber-200); }
+.stakeholder--amber::after   { background: var(--amber-600); }
+.stakeholder__name { font-size: 13px; font-weight: 700; color: var(--slate-900); }
+.stakeholder__sub  { font-size: 11px; margin-top: 4px; }
+.stakeholder--emerald .stakeholder__sub { color: var(--emerald-700); }
+.stakeholder--blue    .stakeholder__sub { color: var(--blue-700); }
+.stakeholder--rose    .stakeholder__sub { color: var(--rose-700); }
+.stakeholder--amber   .stakeholder__sub { color: var(--amber-800); }
+
+.vteam { display: flex; flex-direction: column; gap: 12px; }
+.vteam__row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100); }
+.vteam__row:last-child { border-bottom: none; padding-bottom: 0; }
+.vteam__name { font-weight: 700; color: var(--slate-800); }
+.vteam__role { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--blue-600); margin-top: 2px; }
+.vteam__role--purple { color: var(--purple-600); }
+.vteam__status { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: var(--radius); }
+.vteam__status--active  { background: var(--emerald-100); color: var(--emerald-800); }
+.vteam__status--pending { background: var(--amber-100);   color: var(--amber-800);   }
+
+.mb-6 { margin-bottom: 24px; }
+
+@media (max-width: 1024px) {
+  .grid--3 { grid-template-columns: 1fr; }
+  .grid--4 { grid-template-columns: repeat(2, 1fr); }
+  .col-span-2 { grid-column: auto; }
+  .strategy-detail { grid-template-columns: 1fr; }
+  .velocity-grid { grid-template-columns: 1fr; }
+}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
+<body>
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20">
-        <div class="p-6 border-b border-slate-800">
-            <h1 class="text-xl font-bold tracking-wider text-blue-400">AE COMMAND</h1>
-            <p class="text-xs text-slate-400 mt-1">Retail & Mfg Territory</p>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto py-4">
-            <div class="px-4 mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Territory Mgmt</div>
-            <nav class="px-4 space-y-1 mb-8">
-                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn w-full text-left px-4 py-2.5 rounded bg-blue-600 text-white font-medium transition text-sm">Morning Briefing</button>
-                <button onclick="switchTab('portfolio')" id="btn-portfolio" class="nav-btn w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm">Account Portfolio</button>
-                <button onclick="switchTab('whitespace')" id="btn-whitespace" class="nav-btn w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm">Licensing Whitespace</button>
-                <button onclick="switchTab('forecast')" id="btn-forecast" class="nav-btn w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm">Pipeline Forecast</button>
-                <button onclick="switchTab('velocity')" id="btn-velocity" class="nav-btn w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm">Velocity (Save Qtr)</button>
-            </nav>
+<aside class="sidebar">
+  <div class="sidebar__header">
+    <h1 class="sidebar__brand">AE COMMAND</h1>
+    <p class="sidebar__sub">Retail &amp; Mfg Territory</p>
+  </div>
 
-            <div class="px-4 mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Deal Execution</div>
-            <nav class="px-4 space-y-1">
-                <button onclick="switchTab('customer360')" id="btn-customer360" class="nav-btn flex items-center justify-between w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm border border-slate-700 hover:border-blue-500">
-                    <span>Contoso Retail</span>
-                    <span class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded">Tier 1</span>
-                </button>
-            </nav>
-        </div>
+  <div class="sidebar__body">
+    <div class="sidebar__section-label">Territory Mgmt</div>
+    <nav class="sidebar__nav">
+      <button onclick="switchTab('dashboard')"  id="btn-dashboard"  class="nav-btn is-active">Morning Briefing</button>
+      <button onclick="switchTab('portfolio')"  id="btn-portfolio"  class="nav-btn">Account Portfolio</button>
+      <button onclick="switchTab('whitespace')" id="btn-whitespace" class="nav-btn">Licensing Whitespace</button>
+      <button onclick="switchTab('forecast')"   id="btn-forecast"   class="nav-btn">Pipeline Forecast</button>
+      <button onclick="switchTab('velocity')"   id="btn-velocity"   class="nav-btn">Velocity (Save Qtr)</button>
+    </nav>
 
-        <div class="p-4 border-t border-slate-800 bg-slate-950">
-            <p class="text-sm font-semibold">Logged in as:</p>
-            <p class="text-xs text-slate-400">Senior Account Executive</p>
-        </div>
-    </aside>
+    <div class="sidebar__section-label">Selected Account</div>
+    <nav class="sidebar__nav">
+      <button onclick="switchTab('customer360')" id="btn-customer360" class="nav-btn nav-btn--customer">
+        <span id="sidebar-account-name">Contoso Retail</span>
+        <span class="nav-btn__pill" id="sidebar-account-tier">Tier 1</span>
+      </button>
+    </nav>
+    <p class="sidebar__hint">Click any row in Account Portfolio to switch.</p>
+  </div>
 
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative bg-slate-50">
-        
-        <header id="header-territory" class="bg-white border-b border-slate-200 p-6 flex justify-between items-center shadow-sm z-10 sticky top-0">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-900" id="header-title">Morning Briefing</h2>
-                <p class="text-sm text-slate-500">Real-time territory pulse • 50 Accounts</p>
-            </div>
-            <div class="flex space-x-6 text-sm">
-                <div class="text-right">
-                    <p class="text-slate-500 font-medium">FY Quota</p>
-                    <p class="text-xl font-bold text-slate-800">$60.0M</p>
+  <div class="sidebar__footer">
+    <p class="sidebar__footer-label">Logged in as:</p>
+    <p class="sidebar__footer-sub">Senior Account Executive</p>
+  </div>
+</aside>
+
+<main class="main">
+
+  <header id="header-territory" class="page-header">
+    <div>
+      <h2 class="page-header__title" id="header-title">Morning Briefing</h2>
+      <p class="page-header__sub" id="header-subtitle">Real-time territory pulse • 22 Accounts</p>
+    </div>
+    <div class="metrics-row">
+      <div class="metric"><p class="metric__label">FY Quota</p><p class="metric__value">$60.0M</p></div>
+      <div class="metric"><p class="metric__label">Attained</p><p class="metric__value metric__value--green">$24.5M</p></div>
+      <div class="metric"><p class="metric__label">Total Pipeline</p><p class="metric__value metric__value--blue">$42.0M</p></div>
+    </div>
+  </header>
+
+  <header id="header-customer" class="page-header page-header--customer hidden">
+    <div>
+      <span class="back-link" onclick="switchTab('portfolio')">← Back to Portfolio</span>
+      <div class="customer-title-row">
+        <h2 class="customer-title" id="cust-title">Contoso Retail</h2>
+        <span id="cust-tier-pill" class="pill--strategic">Tier 1 Strategic</span>
+      </div>
+      <p class="customer-meta" id="cust-meta">Global Omnichannel Retailer | 15,000 Employees</p>
+    </div>
+    <div class="customer-stats">
+      <div class="customer-stat">
+        <p class="customer-stat__label">EA Renewal</p>
+        <p class="customer-stat__value" id="cust-renewal">--</p>
+      </div>
+      <div class="customer-stat">
+        <p class="customer-stat__label">Whitespace ARR</p>
+        <p class="customer-stat__value customer-stat__value--green" id="cust-whitespace">--</p>
+      </div>
+      <div class="customer-stat">
+        <p class="customer-stat__label">Health</p>
+        <p class="customer-stat__value" id="cust-health">--</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- MORNING BRIEFING -->
+    <div id="tab-dashboard" class="tab-content">
+      <div class="grid grid--3">
+        <div class="card col-span-2">
+          <h3 class="card__header"><span>🎯</span> Strategic Execution Tasks</h3>
+          <ul class="task-list">
+            <li class="task">
+              <div class="task__row">
+                <div class="task__main">
+                  <input type="checkbox" class="task__check">
+                  <div class="task__title-block task__title--link" onclick="openAccount('contoso')">
+                    <p class="task__title">Draft E5 Cost-Savings Pitch (Contoso Retail)</p>
+                    <p class="task__sub">Tier 1 • Consolidate Zoom, Okta, &amp; Crowdstrike for CFO meeting.</p>
+                  </div>
                 </div>
-                <div class="text-right border-l border-slate-200 pl-6">
-                    <p class="text-slate-500 font-medium">Attained</p>
-                    <p class="text-xl font-bold text-green-600">$24.5M</p>
-                </div>
-                <div class="text-right border-l border-slate-200 pl-6">
-                    <p class="text-slate-500 font-medium">Total Pipeline</p>
-                    <p class="text-xl font-bold text-blue-600">$42.0M</p>
-                </div>
-            </div>
-        </header>
-
-        <header id="header-customer" class="bg-white border-b border-slate-200 p-6 flex justify-between items-start shadow-sm z-10 sticky top-0 hidden">
-            <div>
-                <div class="flex items-center space-x-3 mb-1">
-                    <h2 class="text-3xl font-bold text-slate-900">Contoso Retail</h2>
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Tier 1 Strategic</span>
-                </div>
-                <p class="text-sm text-slate-500">Global Omnichannel Retailer | 15,000 Employees | Current Base: M365 E3 & F1</p>
-            </div>
-            <div class="flex space-x-6 text-sm bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <button onclick="toggleStrategy(this)" class="expand-btn"><span class="label">Expand Strategy</span> <span class="chevron">▼</span></button>
+              </div>
+              <div class="strategy-detail hidden">
                 <div>
-                    <p class="text-slate-500 font-semibold mb-1">EA Renewal Date</p>
-                    <p class="font-bold text-red-600 text-lg">Nov 15, 2026</p>
+                  <p class="strategy-detail__title">AE Execution Motion:</p>
+                  <ul class="strategy-detail__list">
+                    <li>Run <strong>Microsoft Value Calculator</strong> to prove $1.2M hard savings.</li>
+                    <li>Engage <strong>FastTrack</strong> team for deployment planning to mitigate migration risk.</li>
+                    <li>Validate MEDDPICC: Secure CFO as Economic Buyer.</li>
+                  </ul>
                 </div>
-                <div class="border-l pl-6 border-slate-200">
-                    <p class="text-slate-500 font-semibold mb-1">Whitespace ARR</p>
-                    <p class="font-bold text-green-600 text-lg">$4.5M</p>
+                <div class="strategy-detail__sidebar">
+                  <p class="strategy-detail__sidebar-label">V-Team Required</p>
+                  <p class="strategy-detail__sidebar-name">Sarah J. (Security SSP)</p>
+                  <p class="strategy-detail__sidebar-name">David C. (Modern Work CSA)</p>
                 </div>
-                <div class="border-l pl-6 border-slate-200">
-                    <p class="text-slate-500 font-semibold mb-1">Cloud Commit</p>
-                    <p class="font-bold text-blue-600 text-lg">65% Burned</p>
+              </div>
+            </li>
+
+            <li class="task">
+              <div class="task__row">
+                <div class="task__main">
+                  <input type="checkbox" class="task__check">
+                  <div class="task__title-block task__title--link" onclick="openAccount('fabrikam')">
+                    <p class="task__title">F3 Frontline Expansion Call (Fabrikam Mfg)</p>
+                    <p class="task__sub">Tier 2 • Adding 500 shift workers, push Power Apps for inventory.</p>
+                  </div>
                 </div>
-            </div>
-        </header>
-
-        <div class="p-8 pb-20">
-
-            <div id="tab-dashboard" class="tab-content">
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-lg font-bold mb-4 border-b border-slate-100 pb-3 flex items-center"><span class="mr-2">🎯</span> High Leverage Tasks</h3>
-                        <ul class="space-y-5">
-                            <li class="flex items-start group">
-                                <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
-                                <div>
-                                    <p class="font-bold text-slate-800 group-hover:text-blue-600 transition cursor-pointer" onclick="switchTab('customer360')">Draft E5 Cost-Savings Pitch (Contoso Retail)</p>
-                                    <p class="text-sm text-slate-500 mt-0.5">Tier 1 • Consolidate Zoom, Okta, & Crowdstrike for CFO meeting.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start group">
-                                <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
-                                <div>
-                                    <p class="font-bold text-slate-800">F3 Frontline Expansion Call (Fabrikam Mfg)</p>
-                                    <p class="text-sm text-slate-500 mt-0.5">Tier 2 • Adding 500 shift workers, push Power Apps for inventory.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start group">
-                                <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
-                                <div>
-                                    <p class="font-bold text-slate-800">Accenture Partner Sync (Northwind Traders)</p>
-                                    <p class="text-sm text-slate-500 mt-0.5">Tier 1 • Align on Copilot readiness workshop SOW.</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-lg font-bold mb-4 border-b border-slate-100 pb-3 flex items-center"><span class="mr-2">📡</span> Market Signals</h3>
-                        <div class="space-y-4">
-                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 shadow-sm">
-                                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Retail Trend</p>
-                                <p class="text-sm font-bold text-slate-800">Adventure Works pushing for hyper-personalized marketing.</p>
-                                <div class="mt-3 pt-3 border-t border-blue-100">
-                                    <p class="text-xs font-semibold text-slate-600">Action: Pitch Azure OpenAI + D365 Customer Insights.</p>
-                                </div>
-                            </div>
-                            <div class="bg-red-50 p-4 rounded-lg border border-red-100 shadow-sm">
-                                <p class="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1">Mfg Alert</p>
-                                <p class="text-sm font-bold text-slate-800">Trey Research faces legacy OT integration delays.</p>
-                                <div class="mt-3 pt-3 border-t border-red-100">
-                                    <p class="text-xs font-semibold text-slate-600">Action: Position Entra ID as mandatory prerequisite.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <button onclick="toggleStrategy(this)" class="expand-btn"><span class="label">Expand Strategy</span> <span class="chevron">▼</span></button>
+              </div>
+              <div class="strategy-detail hidden">
+                <div>
+                  <p class="strategy-detail__title">AE Execution Motion:</p>
+                  <ul class="strategy-detail__list">
+                    <li>Demo <strong>Power Apps</strong> inventory tracking on shop-floor tablets.</li>
+                    <li>Position F3 + Power Platform bundle for 500 new shift workers.</li>
+                    <li>Engage Manufacturing SSP for technical validation &amp; ROI modeling.</li>
+                  </ul>
                 </div>
-            </div>
-
-            <div id="tab-portfolio" class="tab-content hidden">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="text-lg font-bold text-slate-800">Account Prioritization</h3>
-                        <button class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 py-1.5 px-4 rounded font-medium transition">Filter Views</button>
-                    </div>
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider">
-                                <th class="p-4 border-b border-slate-200 font-semibold">Account Name</th>
-                                <th class="p-4 border-b border-slate-200 font-semibold">Industry</th>
-                                <th class="p-4 border-b border-slate-200 font-semibold">Tier</th>
-                                <th class="p-4 border-b border-slate-200 font-semibold">Whitespace</th>
-                                <th class="p-4 border-b border-slate-200 font-semibold">Key Partner</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm">
-                            <tr class="border-b border-slate-100 hover:bg-blue-50 transition cursor-pointer" onclick="switchTab('customer360')">
-                                <td class="p-4 font-bold text-slate-800 flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>Contoso Retail</td>
-                                <td class="p-4 text-slate-600">Retail</td>
-                                <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 1</span></td>
-                                <td class="p-4 font-bold text-green-600">$8.5M</td>
-                                <td class="p-4 text-slate-600">Accenture</td>
-                            </tr>
-                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                                <td class="p-4 font-semibold text-slate-800">Fabrikam Mfg</td>
-                                <td class="p-4 text-slate-600">Manufacturing</td>
-                                <td class="p-4"><span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 2</span></td>
-                                <td class="p-4 font-medium text-slate-700">$3.2M</td>
-                                <td class="p-4 text-slate-600">Avanade</td>
-                            </tr>
-                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                                <td class="p-4 font-semibold text-slate-800">Northwind Traders</td>
-                                <td class="p-4 text-slate-600">Retail</td>
-                                <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 1</span></td>
-                                <td class="p-4 font-medium text-slate-700">$6.1M</td>
-                                <td class="p-4 text-slate-600">EY</td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="p-4 font-semibold text-slate-800">Tailspin Toys</td>
-                                <td class="p-4 text-slate-600">Manufacturing</td>
-                                <td class="p-4"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 3</span></td>
-                                <td class="p-4 font-medium text-slate-700">$600K</td>
-                                <td class="p-4 text-slate-600">Self-Serve / Disti</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="strategy-detail__sidebar">
+                  <p class="strategy-detail__sidebar-label">V-Team Required</p>
+                  <p class="strategy-detail__sidebar-name">Mfg Industry SSP</p>
+                  <p class="strategy-detail__sidebar-name">Power Platform CSA</p>
                 </div>
-            </div>
+              </div>
+            </li>
 
-            <div id="tab-whitespace" class="tab-content hidden">
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">Corporate E-Suite Upsell</h3>
-                                <p class="text-sm text-slate-500">E3 to E5 step-ups for Copilot readiness.</p>
-                            </div>
-                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded border border-blue-200">Hero Motion</span>
-                        </div>
-                        <ul class="space-y-4">
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-blue-300 transition cursor-pointer" onclick="switchTab('customer360')">
-                                <div><p class="font-bold text-slate-800">Contoso Retail</p><p class="text-xs text-slate-500 mt-1">Currently: E3 (no Teams)</p></div>
-                                <div class="text-right"><p class="text-green-600 font-bold text-lg">+$1.2M</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: E5 Step-up</p></div>
-                            </li>
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-                                <div><p class="font-bold text-slate-800">Proseware</p><p class="text-xs text-slate-500 mt-1">Currently: O365 E1</p></div>
-                                <div class="text-right"><p class="text-green-600 font-bold text-lg">+$800K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 E3</p></div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">Frontline F-Suite Surge</h3>
-                                <p class="text-sm text-slate-500">Untapped factory floor and store workers.</p>
-                            </div>
-                            <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded border border-emerald-200">Volume Play</span>
-                        </div>
-                        <ul class="space-y-4">
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-                                <div><p class="font-bold text-slate-800">Fabrikam Mfg</p><p class="text-xs text-slate-500 mt-1">3,000 Unlicensed Floor Workers</p></div>
-                                <div class="text-right"><p class="text-blue-600 font-bold text-lg">+$450K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 F3</p></div>
-                            </li>
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-                                <div><p class="font-bold text-slate-800">Adventure Works</p><p class="text-xs text-slate-500 mt-1">Seasonal Retail Staff</p></div>
-                                <div class="text-right"><p class="text-blue-600 font-bold text-lg">+$220K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 F1</p></div>
-                            </li>
-                        </ul>
-                    </div>
+            <li class="task">
+              <div class="task__row">
+                <div class="task__main">
+                  <input type="checkbox" class="task__check">
+                  <div class="task__title-block task__title--link" onclick="openAccount('northwind')">
+                    <p class="task__title">Accenture Partner Sync (Northwind Traders)</p>
+                    <p class="task__sub">Tier 1 • Align on Copilot readiness workshop SOW.</p>
+                  </div>
                 </div>
-            </div>
-
-            <div id="tab-forecast" class="tab-content hidden">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6">Weighted vs. Unweighted Pipeline</h3>
-                    <div class="h-72">
-                        <canvas id="forecastChart"></canvas>
-                    </div>
+                <button onclick="toggleStrategy(this)" class="expand-btn"><span class="label">Expand Strategy</span> <span class="chevron">▼</span></button>
+              </div>
+              <div class="strategy-detail hidden">
+                <div>
+                  <p class="strategy-detail__title">AE Execution Motion:</p>
+                  <ul class="strategy-detail__list">
+                    <li>Review Partner SOW for data governance audit (<strong>Purview</strong>).</li>
+                    <li>Nominate deal for <strong>ECIF Funding</strong> to subsidize partner deployment costs and accelerate the close.</li>
+                  </ul>
                 </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-200 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 text-emerald-600 text-6xl font-black">80%</div>
-                        <h4 class="font-bold text-emerald-900 text-lg">Commit Bucket</h4>
-                        <p class="text-sm text-emerald-700 mb-4">Sitting in legal/procurement.</p>
-                        <p class="text-4xl font-black text-emerald-600">$18.5M</p>
-                    </div>
-                    <div class="bg-amber-50 p-6 rounded-xl border border-amber-200 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 text-amber-600 text-6xl font-black">40%</div>
-                        <h4 class="font-bold text-amber-900 text-lg">Upside Bucket</h4>
-                        <p class="text-sm text-amber-700 mb-4">Validated case, paper process pending.</p>
-                        <p class="text-4xl font-black text-amber-600">$12.0M</p>
-                    </div>
+                <div class="strategy-detail__sidebar strategy-detail__sidebar--partner">
+                  <p class="strategy-detail__sidebar-label">Partner Margin / Incentive</p>
+                  <p class="strategy-detail__sidebar-name strategy-detail__sidebar-name--emerald">CSP Margin + Deployment Services</p>
                 </div>
-            </div>
-
-            <div id="tab-velocity" class="tab-content hidden">
-                <div class="bg-rose-50 border-l-4 border-rose-600 p-8 rounded-r-xl shadow-sm border-t border-b border-r border-rose-100">
-                    <div class="flex items-center mb-2">
-                        <span class="text-2xl mr-3">🚨</span>
-                        <h3 class="text-2xl font-bold text-rose-900">Contingency Plan: Save the Quarter</h3>
-                    </div>
-                    <p class="text-rose-700 text-base mb-8 ml-9 max-w-3xl">If a multi-million dollar "Commit" deal slips, do not panic. Execute these high-velocity, low-friction add-ons to bridge the immediate revenue gap.</p>
-                    
-                    <div class="grid grid-cols-3 gap-6 ml-9">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 1</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Executive Copilot Pilots</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Target existing E3/E5 customers. Pitch a 50-seat Copilot pilot for the C-suite. Closes in days via a simple administrative EA add-on.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 2</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Azure Consumption Drive</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Engage Cloud Solution Architects (CSAs) to spin up purchased-but-unused Azure workloads. Direct and immediate hit to billed revenue.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 3</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Frontline (F5) Security</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Audit Tier 2 manufacturing accounts. Sell the F5 Security compliance add-on for mobile floor workers handling company data.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-customer360" class="tab-content hidden">
-                <div class="grid grid-cols-3 gap-6">
-
-                    <div class="col-span-2 space-y-6">
-                        
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-200 border-t-4 border-t-blue-600">
-                            <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center"><span class="mr-2">🎙️</span> Active Listening & Takeout Engine</h3>
-                            <p class="text-sm text-slate-500 mb-5">Click tags mentioned by the customer to generate a TCO-driven takeout strategy.</p>
-                            
-                            <div class="flex flex-wrap gap-2 mb-6" id="tag-container">
-                                <button onclick="toggleTag('sprawl', this, 'tag-active')" class="px-4 py-2 rounded-full border border-slate-300 text-sm font-semibold text-slate-700 hover:border-blue-500 transition">"Too many vendors"</button>
-                                <button onclick="toggleTag('ai', this, 'tag-active')" class="px-4 py-2 rounded-full border border-slate-300 text-sm font-semibold text-slate-700 hover:border-blue-500 transition">"Need AI readiness"</button>
-                                <button onclick="toggleTag('aws', this, 'comp-active')" class="px-4 py-2 rounded-full border border-rose-200 text-sm font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 transition shadow-sm">"We run on AWS"</button>
-                                <button onclick="toggleTag('google', this, 'comp-active')" class="px-4 py-2 rounded-full border border-rose-200 text-sm font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 transition shadow-sm">"Using Google Workspace"</button>
-                            </div>
-
-                            <div id="recommendation-engine" class="bg-slate-50 p-6 rounded-lg border border-slate-200 hidden">
-                                <div class="flex justify-between items-center mb-4 border-b border-slate-200 pb-3">
-                                    <h4 class="font-bold text-blue-900 text-lg">Strategic Playbook</h4>
-                                </div>
-                                <div id="pitch-content" class="space-y-4 text-sm text-slate-700 leading-relaxed text-base"></div>
-                                <div class="mt-6 bg-white p-4 rounded-lg border border-slate-200 grid grid-cols-3 gap-4 text-center shadow-sm">
-                                    <div><p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Target Solution</p><p id="rec-sku" class="font-bold text-blue-600 text-lg">--</p></div>
-                                    <div class="border-l border-r border-slate-100"><p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Key Value Prop</p><p id="rec-value-prop" class="font-bold text-slate-800 text-lg">--</p></div>
-                                    <div><p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Pipeline Impact</p><p id="rec-value" class="font-bold text-emerald-600 text-lg">--</p></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-lg font-bold mb-6 flex justify-between items-center text-slate-900">
-                                <span class="flex items-center"><span class="mr-2">📅</span> Engagement Timeline</span>
-                                <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 text-xs rounded font-bold transition border border-slate-200">+ Log Activity</button>
-                            </h3>
-                            <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                                
-                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-500 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">📝</div>
-                                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                                        <div class="flex items-center justify-between space-x-2 mb-2">
-                                            <div class="font-bold text-slate-900 text-sm">CIO Strategy Sync</div>
-                                            <time class="font-bold text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Last Week</time>
-                                        </div>
-                                        <div class="text-sm text-slate-600">Presented 'Do More With Less' TCO analysis. CIO admitted they are spending $1.2M on Zoom and Okta combined. E5 step-up seed planted.</div>
-                                    </div>
-                                </div>
-
-                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-600 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">🎥</div>
-                                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                                        <div class="flex items-center justify-between space-x-2 mb-2">
-                                            <div class="font-bold text-slate-900 text-sm">Copilot Art of the Possible</div>
-                                            <time class="font-semibold text-xs text-slate-400">3 Weeks Ago</time>
-                                        </div>
-                                        <div class="text-sm text-slate-600">Tech Specialist ran Copilot demo for Marketing team. VP of Marketing loved prompt generation. Need to secure E3 prerequisite first.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="space-y-6">
-                        
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">📊</span> MEDDPICC (E5 Deal)</h3>
-                            <div class="grid grid-cols-1 gap-3 text-sm">
-                                <div class="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-100 rounded">
-                                    <span class="font-bold text-emerald-900">M - Metrics</span>
-                                    <span class="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">Verified: $1.2M Savings</span>
-                                </div>
-                                <div class="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-100 rounded">
-                                    <span class="font-bold text-emerald-900">E - Economic Buyer</span>
-                                    <span class="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">Verified: CFO Met</span>
-                                </div>
-                                <div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded">
-                                    <span class="font-bold text-amber-900">D - Decision Criteria</span>
-                                    <span class="text-xs font-bold bg-amber-200 text-amber-800 px-2 py-0.5 rounded">Pending Security Audit</span>
-                                </div>
-                                <div class="flex items-center justify-between p-2.5 bg-rose-50 border border-rose-200 rounded">
-                                    <span class="font-bold text-rose-900">P - Paper Process</span>
-                                    <span class="text-xs font-bold bg-rose-200 text-rose-800 px-2 py-0.5 rounded">Unknown</span>
-                                </div>
-                                <div class="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-100 rounded">
-                                    <span class="font-bold text-emerald-900">C - Champion</span>
-                                    <span class="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">VP of Infrastructure</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">🎯</span> Stakeholder Map</h3>
-                            <div class="space-y-3">
-                                <div class="p-3 border rounded border-emerald-200 bg-emerald-50 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
-                                    <p class="text-sm font-bold text-slate-900">Sarah Jenkins - CFO</p>
-                                    <p class="text-xs text-emerald-700 mt-1">Economic Buyer • Cares about EA Consolidation & TCO</p>
-                                </div>
-                                <div class="p-3 border rounded border-blue-200 bg-blue-50 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-                                    <p class="text-sm font-bold text-slate-900">David Chen - VP Infra</p>
-                                    <p class="text-xs text-blue-700 mt-1">Champion • Wants to reduce Shadow IT</p>
-                                </div>
-                                <div class="p-3 border rounded border-rose-200 bg-rose-50 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-rose-500"></div>
-                                    <p class="text-sm font-bold text-slate-900">Elena Rodriguez - CISO</p>
-                                    <p class="text-xs text-rose-700 mt-1">Evaluator • Prefers CrowdStrike. Needs Defender demo.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">🤝</span> V-Team Roster</h3>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                                    <div>
-                                        <p class="font-bold text-slate-800">Sarah Jenkins</p>
-                                        <p class="text-[10px] uppercase font-bold text-blue-600">App Innovate CSA</p>
-                                    </div>
-                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded">Active</span>
-                                </div>
-                                <div class="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                                    <div>
-                                        <p class="font-bold text-slate-800">David Chen</p>
-                                        <p class="text-[10px] uppercase font-bold text-blue-600">Security SSP</p>
-                                    </div>
-                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded">Active</span>
-                                </div>
-                                <div class="flex justify-between items-center text-sm">
-                                    <div>
-                                        <p class="font-bold text-slate-800">Accenture (Partner)</p>
-                                        <p class="text-[10px] uppercase font-bold text-purple-600">Global System Integrator</p>
-                                    </div>
-                                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-1 rounded">Pending SOW</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
+              </div>
+            </li>
+          </ul>
         </div>
-    </main>
 
-    <script>
-        // Tab Management Logic
-        let chartInitialized = false;
+        <div class="card">
+          <h3 class="card__header"><span>📡</span> Market Signals</h3>
+          <div class="signals">
+            <div class="signal signal--blue">
+              <p class="signal__eyebrow">Retail Trend <span class="dot">•</span> WSJ</p>
+              <p class="signal__headline">Adventure Works pushing for hyper-personalized marketing.</p>
+              <button onclick="toggleSignal(this)" class="signal-btn"><span class="label">Click for Microsoft AE Angle</span> <span class="arrow">↗</span></button>
+              <div class="signal-detail hidden">
+                <strong class="action--blue">Action:</strong> Pitch <strong>Azure OpenAI + D365 Customer Insights</strong>. Position the integrated stack as the only AI-ready CDP that respects existing M365 governance.
+              </div>
+            </div>
 
-        function switchTab(tabId) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            
-            // Show targeted tab
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            
-            // Reset Sidebar Button Styles
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-500');
-                if (btn.id === 'btn-customer360') {
-                    btn.classList.add('hover:bg-slate-800', 'text-slate-300', 'border-slate-700');
-                } else {
-                    btn.classList.add('hover:bg-slate-800', 'text-slate-300');
-                }
-            });
+            <div class="signal signal--red">
+              <p class="signal__eyebrow">MFG Alert <span class="dot">•</span> Forbes</p>
+              <p class="signal__headline">Trey Research faces legacy OT integration delays.</p>
+              <button onclick="toggleSignal(this)" class="signal-btn"><span class="label">Click for Microsoft AE Angle</span> <span class="arrow">↗</span></button>
+              <div class="signal-detail hidden">
+                <strong class="action--red">Action:</strong> Position <strong>Entra ID</strong> as a mandatory prerequisite. Bring in the Mfg SSP to walk through Azure Arc + Defender for IoT as the unified OT control plane.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            // Highlight Active Button
-            const activeBtn = document.getElementById('btn-' + tabId);
-            if (tabId === 'customer360') {
-                activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300', 'border-slate-700');
-                activeBtn.classList.add('bg-slate-800', 'text-white', 'border-blue-500');
-            } else {
-                activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300');
-                activeBtn.classList.add('bg-blue-600', 'text-white');
-            }
+    <!-- ACCOUNT PORTFOLIO -->
+    <div id="tab-portfolio" class="tab-content hidden">
+      <div class="grid grid--4 mb-6">
+        <div class="stat-card"><p class="stat-card__label">Total Accounts</p><p class="stat-card__value" id="stat-total">--</p></div>
+        <div class="stat-card stat-card--blue"><p class="stat-card__label">Tier 1 Strategic</p><p class="stat-card__value" id="stat-tier1">--</p></div>
+        <div class="stat-card stat-card--emerald"><p class="stat-card__label">Total Whitespace</p><p class="stat-card__value" id="stat-whitespace">--</p></div>
+        <div class="stat-card stat-card--amber"><p class="stat-card__label">At-Risk Renewals (90d)</p><p class="stat-card__value" id="stat-risk">--</p></div>
+      </div>
 
-            // Header Management (Toggle between Territory Header and Customer Header)
-            if (tabId === 'customer360') {
-                document.getElementById('header-territory').classList.add('hidden');
-                document.getElementById('header-customer').classList.remove('hidden');
-            } else {
-                document.getElementById('header-customer').classList.add('hidden');
-                document.getElementById('header-territory').classList.remove('hidden');
-                
-                // Update Territory Title dynamically
-                const titles = {
-                    'dashboard': 'Morning Briefing',
-                    'portfolio': 'Account Portfolio',
-                    'whitespace': 'Licensing Whitespace',
-                    'forecast': 'Pipeline Forecast',
-                    'velocity': 'Velocity Operations'
-                };
-                document.getElementById('header-title').innerText = titles[tabId];
-            }
+      <div class="filter-bar">
+        <input id="portfolio-search" type="text" placeholder="🔍 Search accounts…" class="filter-search">
+        <div class="filter-group">
+          <span class="filter-group__label">Tier:</span>
+          <button class="filter-btn is-active" data-filter="tier" data-value="all">All</button>
+          <button class="filter-btn" data-filter="tier" data-value="1">Tier 1</button>
+          <button class="filter-btn" data-filter="tier" data-value="2">Tier 2</button>
+          <button class="filter-btn" data-filter="tier" data-value="3">Tier 3</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-group__label">Industry:</span>
+          <button class="filter-btn is-active" data-filter="industry" data-value="all">All</button>
+          <button class="filter-btn" data-filter="industry" data-value="Retail">Retail</button>
+          <button class="filter-btn" data-filter="industry" data-value="Manufacturing">Manufacturing</button>
+        </div>
+      </div>
 
-            // Initialize Chart if needed (only on first view of Forecast tab to prevent render bugs)
-            if (tabId === 'forecast' && !chartInitialized) {
-                initChart();
-                chartInitialized = true;
-            }
-        }
+      <div class="table-wrapper">
+        <div class="table-wrapper__top">
+          <h3 class="table-wrapper__title">Showing <span id="portfolio-count">--</span> accounts</h3>
+          <p class="table-wrapper__sub">Click any row to drill into customer 360</p>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="sortable" onclick="sortPortfolio('name')">Account</th>
+                <th>Industry</th>
+                <th class="sortable" onclick="sortPortfolio('tier')">Tier</th>
+                <th class="sortable" onclick="sortPortfolio('employees')">Employees</th>
+                <th class="sortable" onclick="sortPortfolio('whitespace')">Whitespace</th>
+                <th class="sortable" onclick="sortPortfolio('renewal')">EA Renewal</th>
+                <th>Health</th>
+                <th>Key Partner</th>
+              </tr>
+            </thead>
+            <tbody id="portfolio-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-        // Initialize Chart.js
-        function initChart() {
-            const ctx = document.getElementById('forecastChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                    datasets: [
-                        {
-                            label: 'Unweighted Pipeline ($M)',
-                            data: [15, 22, 30, 42],
-                            backgroundColor: '#CBD5E1', // slate-300
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Weighted Forecast ($M)',
-                            data: [12, 14, 18, 24.5],
-                            backgroundColor: '#2563EB', // blue-600
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top' }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { borderDash: [2, 4], color: '#e2e8f0' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        }
+    <!-- LICENSING WHITESPACE -->
+    <div id="tab-whitespace" class="tab-content hidden">
+      <div class="grid grid--2">
+        <div class="card">
+          <div class="section-title-row">
+            <div><h3 class="section-title">Corporate E-Suite Upsell</h3><p class="section-sub">E3 to E5 step-ups for Copilot readiness.</p></div>
+            <span class="pill pill--blue">Hero Motion</span>
+          </div>
+          <ul class="ws-list">
+            <li class="ws-item ws-item--clickable" onclick="openAccount('contoso')">
+              <div><p class="ws-item__name">Contoso Retail</p><p class="ws-item__sub">Currently: E3 (no Teams)</p></div>
+              <div><p class="ws-item__amt ws-item__amt--green">+$1.2M</p><p class="ws-item__target">Target: E5 Step-up</p></div>
+            </li>
+            <li class="ws-item ws-item--clickable" onclick="openAccount('proseware')">
+              <div><p class="ws-item__name">Proseware Inc</p><p class="ws-item__sub">Currently: O365 E1</p></div>
+              <div><p class="ws-item__amt ws-item__amt--green">+$800K</p><p class="ws-item__target">Target: M365 E3</p></div>
+            </li>
+            <li class="ws-item ws-item--clickable" onclick="openAccount('vanarsdel')">
+              <div><p class="ws-item__name">VanArsdel Ltd</p><p class="ws-item__sub">Currently: M365 E3</p></div>
+              <div><p class="ws-item__amt ws-item__amt--green">+$950K</p><p class="ws-item__target">Target: E5 Step-up</p></div>
+            </li>
+          </ul>
+        </div>
 
-        // Active Listening Tag Logic (Customer 360 Tab)
-        let activeState = { sprawl: false, ai: false, aws: false, google: false };
+        <div class="card">
+          <div class="section-title-row">
+            <div><h3 class="section-title">Frontline F-Suite Surge</h3><p class="section-sub">Untapped factory floor and store workers.</p></div>
+            <span class="pill pill--emerald">Volume Play</span>
+          </div>
+          <ul class="ws-list">
+            <li class="ws-item ws-item--clickable" onclick="openAccount('fabrikam')">
+              <div><p class="ws-item__name">Fabrikam Mfg</p><p class="ws-item__sub">3,000 Unlicensed Floor Workers</p></div>
+              <div><p class="ws-item__amt ws-item__amt--blue">+$450K</p><p class="ws-item__target">Target: M365 F3</p></div>
+            </li>
+            <li class="ws-item ws-item--clickable" onclick="openAccount('adventure')">
+              <div><p class="ws-item__name">Adventure Works</p><p class="ws-item__sub">Seasonal Retail Staff</p></div>
+              <div><p class="ws-item__amt ws-item__amt--blue">+$220K</p><p class="ws-item__target">Target: M365 F1</p></div>
+            </li>
+            <li class="ws-item ws-item--clickable" onclick="openAccount('wingtip')">
+              <div><p class="ws-item__name">Wingtip Toys</p><p class="ws-item__sub">1,200 Plant Operators</p></div>
+              <div><p class="ws-item__amt ws-item__amt--blue">+$180K</p><p class="ws-item__target">Target: M365 F3</p></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-        function toggleTag(tag, element, activeClass) {
-            activeState[tag] = !activeState[tag];
-            element.classList.toggle(activeClass);
-            updateRecommendationEngine();
-        }
+    <!-- PIPELINE FORECAST -->
+    <div id="tab-forecast" class="tab-content hidden">
+      <div class="card mb-6">
+        <h3 class="section-title" style="margin-bottom:24px;">Weighted vs. Unweighted Pipeline</h3>
+        <div class="chart-container"><canvas id="forecastChart"></canvas></div>
+      </div>
+      <div class="grid grid--2">
+        <div class="bucket bucket--commit"><div class="bucket__ghost">80%</div><h4 class="bucket__title">Commit Bucket</h4><p class="bucket__sub">Sitting in legal/procurement.</p><p class="bucket__amount">$18.5M</p></div>
+        <div class="bucket bucket--upside"><div class="bucket__ghost">40%</div><h4 class="bucket__title">Upside Bucket</h4><p class="bucket__sub">Validated case, paper process pending.</p><p class="bucket__amount">$12.0M</p></div>
+      </div>
+    </div>
 
-        function updateRecommendationEngine() {
-            const engine = document.getElementById('recommendation-engine');
-            const pitchContent = document.getElementById('pitch-content');
-            let pitchHTML = '';
-            let sku = '--'; let prop = '--'; let val = '--';
+    <!-- VELOCITY -->
+    <div id="tab-velocity" class="tab-content hidden">
+      <div class="velocity-banner">
+        <div class="velocity-banner__title-row"><span class="velocity-banner__icon">🚨</span><h3 class="velocity-banner__title">Contingency Plan: Save the Quarter</h3></div>
+        <p class="velocity-banner__intro">If a multi-million dollar "Commit" deal slips, do not panic. Execute these high-velocity, low-friction add-ons to bridge the immediate revenue gap.</p>
+        <div class="velocity-grid">
+          <div class="velocity-play"><span class="velocity-play__tag">Play 1</span><h4 class="velocity-play__title">Executive Copilot Pilots</h4><p class="velocity-play__body">Target existing E3/E5 customers. Pitch a 50-seat Copilot pilot for the C-suite. Closes in days via a simple administrative EA add-on.</p></div>
+          <div class="velocity-play"><span class="velocity-play__tag">Play 2</span><h4 class="velocity-play__title">Azure Consumption Drive</h4><p class="velocity-play__body">Engage Cloud Solution Architects (CSAs) to spin up purchased-but-unused Azure workloads. Direct and immediate hit to billed revenue.</p></div>
+          <div class="velocity-play"><span class="velocity-play__tag">Play 3</span><h4 class="velocity-play__title">Frontline (F5) Security</h4><p class="velocity-play__body">Audit Tier 2 manufacturing accounts. Sell the F5 Security compliance add-on for mobile floor workers handling company data.</p></div>
+        </div>
+      </div>
+    </div>
 
-            if (activeState.aws && activeState.sprawl) {
-                pitchHTML = `<strong>The AWS Takeout Play:</strong> "I see you are running AWS but paying for M365. Let's stop funding two ecosystems. By migrating to Azure, we apply the <strong>Azure Hybrid Benefit</strong> to drop your compute costs by 40%. Furthermore, this burns down your <strong>MAC (Microsoft Azure Commitment)</strong>, unlocking deeper discount tiers on your M365 EA renewal."`;
-                sku = 'Azure Infra Migration'; prop = 'TCO & MAC Burn-down'; val = '$2.5M Azure ACR';
-            } else if (activeState.google) {
-                pitchHTML = `<strong>The Google Workspace Takeout:</strong> "Google is great for startups, but enterprise requires compliance. Migrating to M365 E5 eliminates your need to buy bolt-on security like Okta. It provides natively integrated Data Governance via Purview—which is a strict prerequisite before you can safely deploy Copilot."`;
-                sku = 'Google to M365 E5'; prop = 'Enterprise Security & AI'; val = '$1.8M ARR';
-            } else if (activeState.aws) {
-                pitchHTML = `<strong>The Azure Arc Play:</strong> "Not ready to fully leave AWS? No problem. Let's deploy <strong>Azure Arc</strong> to give you a single pane of glass to manage your AWS servers directly from Microsoft's control plane, establishing our footprint."`;
-                sku = 'Azure Arc'; prop = 'Single Pane of Glass'; val = '$300K ACR';
-            } else if (activeState.sprawl || activeState.ai) {
-                pitchHTML = `<strong>The E5 Consolidation Play:</strong> Upsell to E5 to retire 3rd party vendors, establish the security baseline, and unlock Copilot readiness.`;
-                sku = 'M365 E5 Step-Up'; prop = 'Vendor Consolidation'; val = '$1.2M ARR';
-            }
+    <!-- CUSTOMER 360 (rendered dynamically) -->
+    <div id="tab-customer360" class="tab-content hidden">
+      <div id="customer360-content"></div>
+    </div>
 
-            if (Object.values(activeState).some(v => v === true)) {
-                engine.classList.remove('hidden');
-                pitchContent.innerHTML = pitchHTML;
-                document.getElementById('rec-sku').innerText = sku;
-                document.getElementById('rec-value-prop').innerText = prop;
-                document.getElementById('rec-value').innerText = val;
-            } else {
-                engine.classList.add('hidden');
-            }
-        }
-    </script>
+  </div>
+</main>
+
+<script>
+// ============== ACCOUNT DATA ==============
+const accounts = [
+  {
+    id: 'contoso', name: 'Contoso Retail', industry: 'Retail', tier: 1,
+    employees: 15000, whitespace: 8500000, renewalDays: 195, renewalDate: 'Nov 15, 2026',
+    health: 'Healthy', partner: 'Accenture',
+    description: 'Global Omnichannel Retailer | Current Base: M365 E3 & F1',
+    situation: { headline: 'CFO-led SaaS consolidation play in motion', detail: 'CFO Sarah Jenkins disclosed $1.2M annual spend on Zoom + Okta + CrowdStrike. M365 E5 step-up positioned as a one-vendor consolidation. CIO is supportive, CISO leans toward CrowdStrike — Defender for Endpoint demo scheduled.' },
+    deal: { name: 'M365 E5 Consolidation', value: '$4.5M ARR', stage: 'Negotiate', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Sarah Jenkins', role: 'CFO', tag: 'Economic Buyer', notes: 'Cares about EA Consolidation & TCO', color: 'emerald' },
+      { name: 'David Chen', role: 'VP Infrastructure', tag: 'Champion', notes: 'Wants to reduce Shadow IT', color: 'blue' },
+      { name: 'Elena Rodriguez', role: 'CISO', tag: 'Evaluator', notes: 'Prefers CrowdStrike. Needs Defender demo.', color: 'rose' }
+    ],
+    vteam: [
+      { name: 'Mike Patel', role: 'App Innovate CSA', status: 'active' },
+      { name: 'Priya Shah', role: 'Security SSP', status: 'active' },
+      { name: 'Accenture (Partner)', role: 'Global System Integrator', status: 'pending', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: 'Verified: $1.2M Savings' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'Verified: CFO Met' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Pending Security Audit' },
+      { letter: 'P', label: 'Paper Process', state: 'rose', value: 'Unknown' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'VP of Infrastructure' }
+    ],
+    timeline: [
+      { icon: '📝', color: 'blue', title: 'CIO Strategy Sync', when: 'Last Week', body: "Presented 'Do More With Less' TCO analysis. CIO admitted they spend $1.2M on Zoom and Okta combined. E5 step-up seed planted." },
+      { icon: '🎥', color: 'gray', title: 'Copilot Art of the Possible', when: '3 Weeks Ago', body: 'Tech Specialist ran Copilot demo for Marketing team. VP of Marketing loved prompt generation. Need to secure E3 prerequisite first.' }
+    ]
+  },
+  {
+    id: 'northwind', name: 'Northwind Traders', industry: 'Retail', tier: 1,
+    employees: 12000, whitespace: 6100000, renewalDays: 60, renewalDate: 'Jul 03, 2026',
+    health: 'At Risk', partner: 'EY',
+    description: 'Multi-channel Wholesale Distributor | Current Base: M365 E3',
+    situation: { headline: 'Renewal at risk — Google Workspace pilot underway', detail: 'New CIO arrived from a Google-native company and is running a 200-seat Workspace pilot. Copilot readiness workshop with EY positioned as the differentiator. ECIF funding requested to subsidize the Purview compliance audit.' },
+    deal: { name: 'EA Renewal + Copilot Pilot', value: '$3.8M ARR', stage: 'Qualify', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Marcus Thornton', role: 'CIO', tag: 'Detractor', notes: 'Google-native bias. Needs 1:1 dinner.', color: 'rose' },
+      { name: 'Linda Park', role: 'VP Commerce', tag: 'Champion', notes: 'Loves Copilot in Excel. Saved her team 6 hrs/week.', color: 'emerald' },
+      { name: 'James Liu', role: 'Head of Compliance', tag: 'Evaluator', notes: 'Concerned about Google data residency.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'Aisha Roberts', role: 'Modern Work SSP', status: 'active' },
+      { name: 'EY (Partner)', role: 'Big 4 Advisory', status: 'pending', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: '6hr/wk Copilot ROI' },
+      { letter: 'E', label: 'Economic Buyer', state: 'rose', value: 'CIO Hostile' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Compliance + AI' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'EA Renewal Track' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'VP Commerce' }
+    ],
+    timeline: [
+      { icon: '⚠️', color: 'blue', title: 'Google Workspace Pilot Discovered', when: '2 Days Ago', body: 'Internal Slack leak: Workspace pilot running with 200 seats in Commerce org. Need to escalate to EVP this week.' },
+      { icon: '🤝', color: 'gray', title: 'EY Joint Account Plan', when: '2 Weeks Ago', body: 'Aligned with EY partner on Copilot readiness workshop. ECIF nomination in flight.' }
+    ]
+  },
+  {
+    id: 'adventure', name: 'Adventure Works', industry: 'Retail', tier: 1,
+    employees: 9800, whitespace: 4900000, renewalDays: 240, renewalDate: 'Dec 30, 2026',
+    health: 'Healthy', partner: 'Deloitte',
+    description: 'Outdoor Apparel & Cycling Retailer | Current Base: M365 E5',
+    situation: { headline: 'Hyper-personalization push — AI is the wedge', detail: 'CMO publicly committed to "1:1 personalization at scale" in WSJ interview. Azure OpenAI + D365 Customer Insights paired with Fabric is the integrated answer. Deloitte is co-selling. Marketing has executive air cover.' },
+    deal: { name: 'D365 CI + Azure OpenAI', value: '$2.2M ACR', stage: 'Propose', close: 'Q3 FY27' },
+    stakeholders: [
+      { name: 'Rachel Kim', role: 'CMO', tag: 'Economic Buyer', notes: 'Wants AI-driven 1:1 marketing. Public commitment.', color: 'emerald' },
+      { name: 'Tom Rivera', role: 'Chief Data Officer', tag: 'Champion', notes: 'Already has Fabric POC running.', color: 'blue' },
+      { name: 'Nora Ahmed', role: 'VP E-commerce', tag: 'Influencer', notes: 'Wants Copilot embedded in storefront ops.', color: 'blue' }
+    ],
+    vteam: [
+      { name: 'Ben Cooper', role: 'AI Specialist', status: 'active' },
+      { name: 'Deloitte Digital', role: 'CX Transformation Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: 'CMO 1:1 Personalization KPI' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'CMO Engaged' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'AI-First + Privacy' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'Procurement Outline Set' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CDO + CMO' }
+    ],
+    timeline: [
+      { icon: '🚀', color: 'blue', title: 'WSJ Interview Drop', when: 'Yesterday', body: 'CMO quoted on hyper-personalization roadmap. Sent congrats note + Azure OpenAI customer story link.' },
+      { icon: '🧪', color: 'gray', title: 'Fabric POC Kicked Off', when: '6 Weeks Ago', body: 'CDO\'s team running Fabric POC merging POS + loyalty data. Early results show 22% lift in segment quality.' }
+    ]
+  },
+  {
+    id: 'vanarsdel', name: 'VanArsdel Ltd', industry: 'Retail', tier: 1,
+    employees: 11500, whitespace: 3700000, renewalDays: 88, renewalDate: 'Aug 01, 2026',
+    health: 'Watch', partner: 'Accenture',
+    description: 'Premium Furniture & Home Goods | Current Base: M365 E3 + Hybrid Azure/AWS',
+    situation: { headline: 'Multi-cloud reality — Arc as the trojan horse', detail: 'Half their workloads run on AWS due to a 2022 acquisition. CIO refuses a forklift migration. Azure Arc positioned as the unified control plane. APAC expansion needs E5 + Defender for compliance.' },
+    deal: { name: 'Azure Arc + E5 Step-up', value: '$1.9M (mixed)', stage: 'Develop', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Hiroshi Tanaka', role: 'CIO', tag: 'Champion', notes: 'Pragmatic multi-cloud. Trusts Arc story.', color: 'blue' },
+      { name: 'Olivia Brennan', role: 'VP APAC Ops', tag: 'Economic Buyer', notes: 'Compliance budget owner for expansion.', color: 'emerald' },
+      { name: 'Raj Mehta', role: 'Head of SRE', tag: 'Detractor', notes: 'AWS loyalist. Skeptical of Arc claims.', color: 'rose' }
+    ],
+    vteam: [
+      { name: 'Carla Diaz', role: 'Azure Hybrid CSA', status: 'active' },
+      { name: 'Accenture Cloud', role: 'Multi-Cloud SI', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: '40% TCO Claim Pending' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'VP APAC Ops' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Multi-cloud + Compliance' },
+      { letter: 'P', label: 'Paper Process', state: 'rose', value: 'Not Mapped' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CIO' }
+    ],
+    timeline: [
+      { icon: '🌏', color: 'blue', title: 'APAC Expansion Briefing', when: 'Last Week', body: 'VP APAC walked through Tokyo + Singapore launch timing. E5 + Defender needed for local data sovereignty.' },
+      { icon: '🛠️', color: 'gray', title: 'Arc PoC Demo', when: '1 Month Ago', body: 'Demoed Arc managing AWS EC2 fleet from Azure portal. CIO impressed. SRE lead unconvinced.' }
+    ]
+  },
+  {
+    id: 'trey', name: 'Trey Research', industry: 'Manufacturing', tier: 1,
+    employees: 22000, whitespace: 7200000, renewalDays: 145, renewalDate: 'Sep 26, 2026',
+    health: 'Watch', partner: 'Avanade',
+    description: 'Industrial Equipment & Robotics | Current Base: M365 E3 + Azure',
+    situation: { headline: 'Legacy OT integration delays surfacing in press', detail: 'Forbes reported delayed factory automation rollouts. OT/IT convergence stalled because Identity is on legacy AD. Entra ID modernization positioned as a hard prerequisite. Avanade leading the architecture work.' },
+    deal: { name: 'Entra ID + Defender for IoT', value: '$3.4M ARR', stage: 'Develop', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Catherine Wu', role: 'CTO', tag: 'Champion', notes: 'Owns OT/IT convergence mandate.', color: 'blue' },
+      { name: 'Jorge Alvarez', role: 'VP Plant Operations', tag: 'Economic Buyer', notes: 'Budget tied to throughput KPIs.', color: 'emerald' },
+      { name: 'Steve Park', role: 'Director of OT Security', tag: 'Influencer', notes: 'Burned by past identity project.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'Diana Holt', role: 'Industry Mfg SSP', status: 'active' },
+      { name: 'Sanjay Kapoor', role: 'Defender for IoT TS', status: 'active' },
+      { name: 'Avanade', role: 'Mfg Industry Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: 'Throughput uplift modeled' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'VP Plant Ops' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Identity Modernization' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'Procurement Engaged' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CTO' }
+    ],
+    timeline: [
+      { icon: '📰', color: 'blue', title: 'Forbes Article Hit', when: '3 Days Ago', body: 'Forbes piece called out delayed automation rollouts. Sent CTO a note framing Entra as the unblock.' },
+      { icon: '🏭', color: 'gray', title: 'Plant Floor Walkthrough', when: '5 Weeks Ago', body: 'Toured Plant 4 with Avanade architects. Mapped 14 OT integration points needing modern identity.' }
+    ]
+  },
+  {
+    id: 'proseware', name: 'Proseware Inc', industry: 'Manufacturing', tier: 1,
+    employees: 8500, whitespace: 3400000, renewalDays: 310, renewalDate: 'Mar 09, 2027',
+    health: 'Healthy', partner: 'KPMG',
+    description: 'Specialty Electronics OEM | Current Base: O365 E1 (legacy)',
+    situation: { headline: 'Stuck on E1 — Copilot is the unlock conversation', detail: 'Still on a 2018 O365 E1 agreement. Cannot deploy Copilot without an E3 base at minimum. New CHRO is championing AI for HR. Use HR pilot as the wedge to true-up the entire estate to E3, then E5.' },
+    deal: { name: 'E1 → E3 True-up + Copilot HR Pilot', value: '$2.1M ARR', stage: 'Qualify', close: 'Q4 FY27' },
+    stakeholders: [
+      { name: 'Anita Desai', role: 'CHRO', tag: 'Champion', notes: 'New hire, AI-first mandate.', color: 'blue' },
+      { name: 'Frank Mosby', role: 'CFO', tag: 'Economic Buyer', notes: 'Cost-conscious, needs ROI proof.', color: 'amber' },
+      { name: 'Larry Owens', role: 'IT Director', tag: 'Detractor', notes: 'Comfortable on E1. Migration-averse.', color: 'rose' }
+    ],
+    vteam: [
+      { name: 'Renee Park', role: 'Modern Work CSA', status: 'active' },
+      { name: 'KPMG (Partner)', role: 'HR Transformation', status: 'pending', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: 'HR ROI Pending' },
+      { letter: 'E', label: 'Economic Buyer', state: 'amber', value: 'CFO Identified' },
+      { letter: 'D', label: 'Decision Criteria', state: 'rose', value: 'Not Set' },
+      { letter: 'P', label: 'Paper Process', state: 'rose', value: 'Unknown' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CHRO' }
+    ],
+    timeline: [
+      { icon: '☕', color: 'blue', title: 'CHRO Coffee Chat', when: 'Last Friday', body: "Validated Copilot for HR use case (resume screening + comp benchmarking). She'll bring CFO to next meeting." },
+      { icon: '📊', color: 'gray', title: 'TCO Analysis Sent', when: '2 Weeks Ago', body: 'Sent E1 vs E3 TCO model. CFO has not responded — IT Director gatekeeping.' }
+    ]
+  },
+  {
+    id: 'fabrikam', name: 'Fabrikam Mfg', industry: 'Manufacturing', tier: 2,
+    employees: 7200, whitespace: 3200000, renewalDays: 75, renewalDate: 'Jul 18, 2026',
+    health: 'At Risk', partner: 'Avanade',
+    description: 'Auto Parts Manufacturer | Current Base: M365 E3 (corporate only)',
+    situation: { headline: 'F3 Frontline volume play — 3,000 untouched workers', detail: '3,000 floor workers have zero licensing today. Operations VP wants tablets on the line for inventory + safety. Power Apps + F3 bundle is the play. Renewal window pressure means we need to act in 60 days.' },
+    deal: { name: 'F3 + Power Platform Frontline', value: '$1.4M ARR', stage: 'Negotiate', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Greg Hollis', role: 'VP Operations', tag: 'Economic Buyer', notes: 'Wants real-time inventory visibility.', color: 'emerald' },
+      { name: 'Maya Sharma', role: 'Plant Manager (Detroit)', tag: 'Champion', notes: 'Already piloting Power Apps inventory.', color: 'blue' },
+      { name: 'Don Reilly', role: 'Union Rep', tag: 'Influencer', notes: 'Concerned about worker surveillance.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'Kelly Boudreaux', role: 'Mfg Industry SSP', status: 'active' },
+      { name: 'Vikram Joshi', role: 'Power Platform CSA', status: 'active' },
+      { name: 'Avanade', role: 'Industry Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '15% inventory accuracy uplift' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'VP Operations' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'Tablet ROI + F3 bundle' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'Renewal Add-on Track' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'Plant Manager' }
+    ],
+    timeline: [
+      { icon: '📱', color: 'blue', title: 'Detroit Plant Pilot Review', when: '4 Days Ago', body: '50-tablet pilot showed inventory error rate dropped from 12% to 2%. Plant Manager wants to scale to all 6 plants.' },
+      { icon: '🤝', color: 'gray', title: 'Union Sync', when: '2 Weeks Ago', body: 'Discussed privacy guardrails. Agreed to no GPS tracking on personal time. Union still cautious.' }
+    ]
+  },
+  {
+    id: 'wingtip', name: 'Wingtip Toys', industry: 'Manufacturing', tier: 2,
+    employees: 3400, whitespace: 1800000, renewalDays: 220, renewalDate: 'Dec 11, 2026',
+    health: 'Healthy', partner: 'Insight',
+    description: 'Educational Toy Maker | Current Base: M365 E3',
+    situation: { headline: 'Connected factory build-out — Azure IoT lead', detail: 'Building a new "smart factory" in Ohio. CTO is committed to Azure IoT Hub + Defender for IoT. F3 attached for 1,200 plant operators. Insight is leading the deployment, with co-funded ECIF.' },
+    deal: { name: 'Smart Factory IoT + F3', value: '$1.1M (mixed)', stage: 'Propose', close: 'Q3 FY27' },
+    stakeholders: [
+      { name: 'Wei Zhang', role: 'CTO', tag: 'Champion', notes: 'IoT-native. Loves Azure Digital Twins.', color: 'blue' },
+      { name: 'Sandra Boone', role: 'COO', tag: 'Economic Buyer', notes: 'Approved smart-factory capex.', color: 'emerald' },
+      { name: 'Rick Patterson', role: 'Operations Director', tag: 'Influencer', notes: 'Wants F3 for 1,200 operators.', color: 'blue' }
+    ],
+    vteam: [
+      { name: 'Eli Stonebraker', role: 'IoT Specialist', status: 'active' },
+      { name: 'Insight', role: 'Deployment Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '30% downtime reduction target' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'COO' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'IoT-first architecture' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'Capex cycle Q3' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CTO' }
+    ],
+    timeline: [
+      { icon: '🏗️', color: 'blue', title: 'Ohio Factory Site Visit', when: 'Last Week', body: 'Toured construction site. Insight architect mapped IoT Hub topology. Go-live Q1 FY27.' },
+      { icon: '💰', color: 'gray', title: 'ECIF Approved', when: '3 Weeks Ago', body: '$120K ECIF for IoT proof-of-concept. Insight leading.' }
+    ]
+  },
+  {
+    id: 'wideworld', name: 'Wide World Importers', industry: 'Retail', tier: 2,
+    employees: 5600, whitespace: 2400000, renewalDays: 168, renewalDate: 'Oct 19, 2026',
+    health: 'Healthy', partner: 'SoftwareOne',
+    description: 'International Wholesale Importer | Current Base: M365 E3',
+    situation: { headline: 'Supply chain visibility crisis — D365 SCM lead', detail: 'Shipping disruptions hit margins last quarter. CIO greenlit a 6-month D365 Supply Chain Management evaluation against Oracle. Microsoft has incumbent advantage with M365 + Power BI already deployed.' },
+    deal: { name: 'D365 Supply Chain Management', value: '$1.6M ARR', stage: 'Develop', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Priya Iyer', role: 'CIO', tag: 'Champion', notes: 'Wants integrated stack over Oracle silo.', color: 'blue' },
+      { name: 'Tom Becker', role: 'VP Supply Chain', tag: 'Economic Buyer', notes: 'Margin recovery is his Q1 KPI.', color: 'emerald' },
+      { name: 'Karen Liu', role: 'Director Procurement', tag: 'Detractor', notes: 'Oracle relationship. 15-year vet.', color: 'rose' }
+    ],
+    vteam: [
+      { name: 'Marco Vitale', role: 'D365 Specialist', status: 'active' },
+      { name: 'SoftwareOne', role: 'CSP Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: 'Margin recovery target $4M' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'VP Supply Chain' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'D365 vs Oracle eval' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'RFP underway' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CIO' }
+    ],
+    timeline: [
+      { icon: '📋', color: 'blue', title: 'RFP Response Submitted', when: 'Yesterday', body: 'Joint response with SoftwareOne emphasizing M365 integration depth vs Oracle silo.' },
+      { icon: '⛴️', color: 'gray', title: 'Q4 Earnings Miss', when: '6 Weeks Ago', body: 'Public miss called out shipping costs. CFO demanded SCM modernization plan within 90 days.' }
+    ]
+  },
+  {
+    id: 'tailwind', name: 'Tailwind Traders', industry: 'Retail', tier: 2,
+    employees: 4200, whitespace: 2100000, renewalDays: 95, renewalDate: 'Aug 08, 2026',
+    health: 'Watch', partner: 'CDW',
+    description: 'Online Outdoor Gear Retailer | Current Base: M365 E3 + Azure',
+    situation: { headline: 'E-commerce platform replatform on Azure', detail: 'Migrating from Shopify Plus to a custom Power Pages + Azure storefront for control + AI personalization. CDW is the hands-on-keyboard partner. Renewal window doubles as expansion window.' },
+    deal: { name: 'Power Pages + Azure App Services', value: '$900K ACR', stage: 'Develop', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Jessica Yang', role: 'VP Digital', tag: 'Champion', notes: 'Owns the replatform mandate.', color: 'blue' },
+      { name: 'Rob Maddox', role: 'CTO', tag: 'Economic Buyer', notes: 'Pragmatic. Wants proven ROI.', color: 'emerald' },
+      { name: 'Cara Donovan', role: 'Head of Brand', tag: 'Influencer', notes: 'Prefers Shopify UX. Needs convincing.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'Ahmed Yusuf', role: 'Power Platform TS', status: 'active' },
+      { name: 'CDW', role: 'Deployment Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: 'Conversion lift target 12%' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'CTO' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Custom vs SaaS' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'EA add-on track' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'VP Digital' }
+    ],
+    timeline: [
+      { icon: '🛒', color: 'blue', title: 'Power Pages Demo', when: '5 Days Ago', body: 'CDW + MS Power Platform team demoed Pages + Dataverse storefront. CTO impressed by speed.' },
+      { icon: '📉', color: 'gray', title: 'Shopify Cost Review', when: '4 Weeks Ago', body: 'Annual Shopify Plus bill grew 38% YoY. CFO told VP Digital to find an alternative.' }
+    ]
+  },
+  {
+    id: 'litware', name: 'Litware Industrial', industry: 'Manufacturing', tier: 2,
+    employees: 6300, whitespace: 2600000, renewalDays: 280, renewalDate: 'Feb 06, 2027',
+    health: 'Healthy', partner: 'Avanade',
+    description: 'HVAC Equipment Manufacturer | Current Base: M365 E3',
+    situation: { headline: 'Defender for IoT pilot scaling to enterprise', detail: 'OT/IT convergence deal. Pilot at 1 plant proved value catching 4 anomalies in Q1. Avanade scoping rollout to 8 plants. CISO wants Sentinel SIEM as the next attached play.' },
+    deal: { name: 'Defender for IoT + Sentinel', value: '$1.3M ARR', stage: 'Develop', close: 'Q3 FY27' },
+    stakeholders: [
+      { name: 'Marcus Howell', role: 'CISO', tag: 'Champion', notes: 'OT/IT security vision owner.', color: 'blue' },
+      { name: 'Lisa Crawford', role: 'COO', tag: 'Economic Buyer', notes: 'Approves rollout based on pilot data.', color: 'emerald' }
+    ],
+    vteam: [
+      { name: 'Hannah Park', role: 'Security TS', status: 'active' },
+      { name: 'Avanade', role: 'Industry Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '4 anomalies caught in pilot' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'COO' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'OT/IT integrated stack' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'Renewal cycle' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CISO' }
+    ],
+    timeline: [
+      { icon: '🔒', color: 'blue', title: 'Pilot Readout to Exec Team', when: '8 Days Ago', body: 'CISO presented 4 anomaly catches to exec team. COO approved rollout to 3 more plants in Q3.' },
+      { icon: '🧪', color: 'gray', title: 'Pilot Started', when: '4 Months Ago', body: 'Plant 1 pilot launched with Avanade. 90-day evaluation window now closed positively.' }
+    ]
+  },
+  {
+    id: 'organics', name: 'Best For You Organics', industry: 'Retail', tier: 2,
+    employees: 2900, whitespace: 1500000, renewalDays: 110, renewalDate: 'Aug 23, 2026',
+    health: 'Healthy', partner: 'SoftwareOne',
+    description: 'Organic Grocery Chain | Current Base: M365 E3',
+    situation: { headline: 'Sustainability reporting mandate — Cloud for Sustainability', detail: 'Public B Corp commitment requires verified carbon reporting. Microsoft Cloud for Sustainability paired with Fabric is the only integrated answer in their evaluation set. Earnings call mention drives urgency.' },
+    deal: { name: 'Cloud for Sustainability + Fabric', value: '$700K ACR', stage: 'Propose', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Amelia Wright', role: 'Chief Sustainability Officer', tag: 'Champion', notes: 'Public scope-3 commitment.', color: 'blue' },
+      { name: 'Nick Tran', role: 'CFO', tag: 'Economic Buyer', notes: 'B Corp recertification budget owner.', color: 'emerald' }
+    ],
+    vteam: [
+      { name: 'Jenna Aoki', role: 'Sustainability TS', status: 'active' },
+      { name: 'SoftwareOne', role: 'CSP Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: 'Scope 3 reporting deadline Q4' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'CFO' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'Integrated stack' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'EA add-on' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CSO' }
+    ],
+    timeline: [
+      { icon: '🌱', color: 'blue', title: 'Cloud for Sustainability Demo', when: '3 Days Ago', body: 'CSO impressed by emissions data model + Fabric integration. Following up with technical deep-dive.' },
+      { icon: '📢', color: 'gray', title: 'Earnings Call Mention', when: '5 Weeks Ago', body: 'CFO publicly committed to "verified scope-3 reporting by FY27 Q1." Created urgency.' }
+    ]
+  },
+  {
+    id: 'relecloud', name: 'Relecloud Retail', industry: 'Retail', tier: 2,
+    employees: 3800, whitespace: 1700000, renewalDays: 50, renewalDate: 'Jun 23, 2026',
+    health: 'At Risk', partner: 'Insight',
+    description: 'Discount Retail Chain | Current Base: M365 E3 + Azure',
+    situation: { headline: 'Hostile renewal — AWS counter-pitch active', detail: 'Their CFO got an aggressive AWS proposal claiming 30% TCO savings. We have 50 days to defend. Hybrid Benefit + MAC burndown story is the counter. EBC visit scheduled at MTC Redmond next week.' },
+    deal: { name: 'EA Renewal + Azure ACR Defense', value: '$2.4M (mixed)', stage: 'Negotiate', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Daniel Cross', role: 'CFO', tag: 'Detractor', notes: 'Got AWS proposal. Wants TCO proof.', color: 'rose' },
+      { name: 'Aisha Pope', role: 'CTO', tag: 'Champion', notes: 'Pro-Microsoft but data-driven.', color: 'blue' },
+      { name: 'Brad Henley', role: 'Head of Cloud Eng', tag: 'Detractor', notes: 'AWS Solutions Architect cert.', color: 'rose' }
+    ],
+    vteam: [
+      { name: 'Tara Singh', role: 'EA Renewal SSP', status: 'active' },
+      { name: 'Diego Reyes', role: 'Azure Specialist', status: 'active' },
+      { name: 'Insight', role: 'Defense Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'rose', value: 'AWS counter at 30% savings' },
+      { letter: 'E', label: 'Economic Buyer', state: 'rose', value: 'CFO Hostile' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'TCO over 3 years' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'Renewal cycle' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CTO' }
+    ],
+    timeline: [
+      { icon: '🚨', color: 'blue', title: 'AWS Proposal Surfaced', when: '2 Days Ago', body: 'CTO leaked AWS bid. Building Hybrid Benefit + MAC burndown counter for next week.' },
+      { icon: '✈️', color: 'gray', title: 'MTC Visit Scheduled', when: 'Last Friday', body: 'Booked Microsoft Technology Center Redmond visit for CFO + CTO. AI demos confirmed.' }
+    ]
+  },
+  {
+    id: 'alpine', name: 'Alpine Ski House', industry: 'Manufacturing', tier: 2,
+    employees: 2100, whitespace: 950000, renewalDays: 200, renewalDate: 'Nov 20, 2026',
+    health: 'Healthy', partner: 'CDW',
+    description: 'Ski Equipment Manufacturer | Current Base: M365 E3',
+    situation: { headline: 'Seasonal D365 Commerce push for direct-to-consumer', detail: 'Launching DTC e-commerce ahead of winter season. D365 Commerce + Power Pages selected over Shopify. CDW handling deployment. Tight timeline — must go live by October.' },
+    deal: { name: 'D365 Commerce DTC', value: '$650K ARR', stage: 'Negotiate', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Erika Fischer', role: 'VP DTC', tag: 'Champion', notes: 'Driving DTC strategy.', color: 'blue' },
+      { name: 'Bjorn Larsen', role: 'CEO', tag: 'Economic Buyer', notes: 'Personal stake in DTC launch.', color: 'emerald' }
+    ],
+    vteam: [
+      { name: 'Lena Park', role: 'D365 Commerce TS', status: 'active' },
+      { name: 'CDW', role: 'Deployment Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '$5M Year-1 DTC revenue target' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'CEO' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'D365 + Power Pages' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'EA add-on' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'VP DTC' }
+    ],
+    timeline: [
+      { icon: '⛷️', color: 'blue', title: 'October Go-Live Confirmed', when: '1 Week Ago', body: 'CDW confirmed October 1 go-live. Marketing team starting site build now.' },
+      { icon: '📝', color: 'gray', title: 'Contract Drafted', when: '3 Weeks Ago', body: 'D365 Commerce 3-year add-on contract drafted. In CFO review.' }
+    ]
+  },
+  {
+    id: 'consolidated', name: 'Consolidated Messenger', industry: 'Manufacturing', tier: 2,
+    employees: 5100, whitespace: 2200000, renewalDays: 130, renewalDate: 'Sep 11, 2026',
+    health: 'Watch', partner: 'SHI',
+    description: 'Logistics & Last-Mile Delivery | Current Base: M365 E3',
+    situation: { headline: 'Fleet management modernization — Maps + D365 lead', detail: 'Replacing legacy fleet routing software. Azure Maps + D365 Field Service is the proposed stack. SHI co-selling. Driver app needs to ship in 6 months — Power Apps prototype already in user test.' },
+    deal: { name: 'Azure Maps + D365 Field Service', value: '$1.1M (mixed)', stage: 'Develop', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Hassan Ali', role: 'VP Fleet Ops', tag: 'Champion', notes: 'Wants real-time route optimization.', color: 'blue' },
+      { name: 'Reagan Pope', role: 'CFO', tag: 'Economic Buyer', notes: 'ROI focused. Cautious.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'Pat Riley', role: 'Maps Specialist', status: 'active' },
+      { name: 'SHI', role: 'Reseller Partner', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '8% fuel cost reduction modeled' },
+      { letter: 'E', label: 'Economic Buyer', state: 'amber', value: 'CFO Engaged' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'Stack integration' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'RFP closing' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'VP Fleet Ops' }
+    ],
+    timeline: [
+      { icon: '🗺️', color: 'blue', title: 'Driver App User Test', when: '4 Days Ago', body: 'Power Apps prototype tested with 20 drivers. Net Promoter Score +8 vs current tool.' },
+      { icon: '🚚', color: 'gray', title: 'RFP Issued', when: '6 Weeks Ago', body: 'RFP went out to MS, Oracle, and Esri. Closing in 3 weeks.' }
+    ]
+  },
+  {
+    id: 'phone', name: 'The Phone Company', industry: 'Manufacturing', tier: 2,
+    employees: 4400, whitespace: 1900000, renewalDays: 70, renewalDate: 'Jul 13, 2026',
+    health: 'At Risk', partner: 'SHI',
+    description: 'Telecom Hardware OEM | Current Base: M365 E3 + Azure (mostly idle)',
+    situation: { headline: 'Azure consumption flat — risk of churn', detail: 'Azure spend has been flat for 8 months. Pre-paid commit will under-burn by 35%. CSAs need to drive Cosmos DB and OpenAI workloads now or face credit recovery conversations at renewal.' },
+    deal: { name: 'Azure Re-engagement + ACR Burn', value: '$1.8M ACR', stage: 'Qualify', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Lori Watanabe', role: 'CTO', tag: 'Detractor', notes: 'Considered moving workloads to GCP.', color: 'rose' },
+      { name: 'Mark Owens', role: 'Director Cloud Eng', tag: 'Influencer', notes: 'Wants OpenAI access. Frustrated.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'Owen Briggs', role: 'CSA Lead', status: 'active' },
+      { name: 'SHI', role: 'Reseller Partner', status: 'pending', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'rose', value: '35% MAC under-burn projected' },
+      { letter: 'E', label: 'Economic Buyer', state: 'rose', value: 'CTO Skeptical' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Cost vs strategic AI value' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'Renewal cycle' },
+      { letter: 'C', label: 'Champion', state: 'rose', value: 'None Identified' }
+    ],
+    timeline: [
+      { icon: '📉', color: 'blue', title: 'Azure Burn Review', when: '3 Days Ago', body: 'CSA team flagged 35% under-burn risk. Director Cloud Eng wants OpenAI workshop urgently.' },
+      { icon: '⚠️', color: 'gray', title: 'GCP Inquiry Surfaced', when: '6 Weeks Ago', body: 'CTO\'s LinkedIn showed connection with GCP enterprise lead. Internal heads-up logged.' }
+    ]
+  },
+  {
+    id: 'margies', name: "Margie's Travel Goods", industry: 'Retail', tier: 3,
+    employees: 1200, whitespace: 480000, renewalDays: 165, renewalDate: 'Oct 16, 2026',
+    health: 'Healthy', partner: 'Self-Serve / Disti',
+    description: 'Specialty Travel Accessories | Current Base: M365 Business Standard',
+    situation: { headline: 'Low-touch — self-serve Copilot upsell motion', detail: 'CSP partner managed. Owner-operator just added Copilot for the leadership team. Volume play — automated upsell campaign should drive seat expansion. No high-touch AE needed.' },
+    deal: { name: 'Copilot Seat Expansion', value: '$180K ARR', stage: 'Develop', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Margie Anderson', role: 'CEO/Owner', tag: 'Champion', notes: 'Loves Copilot. Self-purchased 5 seats.', color: 'blue' }
+    ],
+    vteam: [
+      { name: 'Auto-Renew CSM', role: 'Digital Sales', status: 'active' }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: 'Owner anecdote only' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'Owner' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'Per-seat add' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'CSP digital' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CEO' }
+    ],
+    timeline: [
+      { icon: '🎯', color: 'blue', title: 'Copilot Self-Purchase', when: '2 Weeks Ago', body: 'Owner added 5 Copilot seats via CSP portal. Triggered seat-expansion nurture.' }
+    ]
+  },
+  {
+    id: 'tailspin', name: 'Tailspin Toys', industry: 'Manufacturing', tier: 3,
+    employees: 950, whitespace: 600000, renewalDays: 305, renewalDate: 'Mar 04, 2027',
+    health: 'Healthy', partner: 'Self-Serve / Disti',
+    description: 'Wooden Toy Manufacturer | Current Base: M365 Business Premium',
+    situation: { headline: 'Stable mid-market — Power Apps shop floor pilot', detail: 'Owner-led, 950 people. CTO ran a Power Apps inventory app pilot last quarter, saved 4hrs/week per supervisor. Auto-renew motion. Light-touch Industry SSP available for technical questions.' },
+    deal: { name: 'Power Platform Per-User Add', value: '$95K ARR', stage: 'Propose', close: 'Q2 FY27' },
+    stakeholders: [
+      { name: 'Carl Brennan', role: 'CTO', tag: 'Champion', notes: 'Power Apps pilot success.', color: 'blue' }
+    ],
+    vteam: [
+      { name: 'Industry CSM', role: 'Digital Sales', status: 'active' }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '4hr/wk supervisor savings' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'CTO/Owner' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'Per-user license' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'CSP track' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'CTO' }
+    ],
+    timeline: [
+      { icon: '🧱', color: 'blue', title: 'Power Apps Pilot Results', when: '3 Weeks Ago', body: 'CTO shared metrics: 4hr/wk savings per supervisor. Wants to expand to QA team.' }
+    ]
+  },
+  {
+    id: 'lucerne', name: 'Lucerne Publishing', industry: 'Manufacturing', tier: 3,
+    employees: 780, whitespace: 320000, renewalDays: 45, renewalDate: 'Jun 18, 2026',
+    health: 'At Risk', partner: 'Self-Serve / Disti',
+    description: 'Academic Book Publisher | Current Base: M365 Business Standard',
+    situation: { headline: 'Churn risk — declining usage + open ticket backlog', detail: 'M365 active usage dropped 22% in 6 months. 8 unresolved support tickets. CSP partner reports owner is shopping Google Workspace. Save play: human escalation + Copilot demo to Editor in Chief.' },
+    deal: { name: 'Save the Renewal', value: '$280K ARR', stage: 'Qualify', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Helen Cartwright', role: 'Editor in Chief', tag: 'Detractor', notes: 'Frustrated with support response times.', color: 'rose' }
+    ],
+    vteam: [
+      { name: 'SMB Save Team', role: 'Digital Sales', status: 'active' }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'rose', value: 'Usage -22%' },
+      { letter: 'E', label: 'Economic Buyer', state: 'rose', value: 'EiC Hostile' },
+      { letter: 'D', label: 'Decision Criteria', state: 'rose', value: 'Reliability' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'Renewal cycle' },
+      { letter: 'C', label: 'Champion', state: 'rose', value: 'None' }
+    ],
+    timeline: [
+      { icon: '🛟', color: 'blue', title: 'Save Motion Triggered', when: '5 Days Ago', body: 'Usage analytics flagged 22% drop. SMB save team reached out to escalate tickets + offer Copilot demo.' }
+    ]
+  },
+  {
+    id: 'coho', name: 'Coho Vineyard Goods', industry: 'Retail', tier: 3,
+    employees: 670, whitespace: 310000, renewalDays: 175, renewalDate: 'Oct 26, 2026',
+    health: 'Healthy', partner: 'Self-Serve / Disti',
+    description: 'Boutique Wine Retail | Current Base: M365 Business Premium',
+    situation: { headline: 'Niche premium retail — D365 Commerce micro-deal', detail: 'Family-owned chain expanding to e-commerce for first time. D365 Commerce Lite + Power Pages is right-sized. Owner is brand-conscious, will not use Shopify on principle. Light-touch.' },
+    deal: { name: 'D365 Commerce Lite', value: '$130K ARR', stage: 'Develop', close: 'Q3 FY27' },
+    stakeholders: [
+      { name: 'Marie Coho', role: 'CEO/Owner', tag: 'Champion', notes: 'Brand-conscious. Trusts MS over Shopify.', color: 'blue' }
+    ],
+    vteam: [
+      { name: 'SMB Specialist', role: 'Digital Sales', status: 'active' }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: 'DTC launch goal $1M Y1' },
+      { letter: 'E', label: 'Economic Buyer', state: 'green', value: 'Owner' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'D365 chosen' },
+      { letter: 'P', label: 'Paper Process', state: 'amber', value: 'CSP track' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'Owner' }
+    ],
+    timeline: [
+      { icon: '🍷', color: 'blue', title: 'Discovery Call', when: '1 Week Ago', body: 'Owner shared DTC vision. Confirmed budget for FY27 Q3 launch.' }
+    ]
+  },
+  {
+    id: 'fineart', name: 'School of Fine Art', industry: 'Retail', tier: 3,
+    employees: 420, whitespace: 220000, renewalDays: 99, renewalDate: 'Aug 12, 2026',
+    health: 'Watch', partner: 'Self-Serve / Disti',
+    description: 'Art Supply Retail Chain | Current Base: M365 Business Standard',
+    situation: { headline: 'Renewal in 99 days — competitive lurking', detail: 'Renewal coming up. CSP partner reports a Google Workspace pitch was made by a friend of the owner. Need to defend with Copilot for SMB story + Teams Phone consolidation.' },
+    deal: { name: 'EA Renewal Defense', value: '$130K ARR', stage: 'Qualify', close: 'Q1 FY27' },
+    stakeholders: [
+      { name: 'Ben Knight', role: 'COO', tag: 'Influencer', notes: 'Decides for owner on tech.', color: 'amber' }
+    ],
+    vteam: [
+      { name: 'SMB Defense Team', role: 'Digital Sales', status: 'active' }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'amber', value: 'Teams Phone TCO' },
+      { letter: 'E', label: 'Economic Buyer', state: 'amber', value: 'COO Engaged' },
+      { letter: 'D', label: 'Decision Criteria', state: 'amber', value: 'Cost + AI' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'Renewal cycle' },
+      { letter: 'C', label: 'Champion', state: 'amber', value: 'COO Lukewarm' }
+    ],
+    timeline: [
+      { icon: '🎨', color: 'blue', title: 'Defense Motion Activated', when: '1 Week Ago', body: 'CSP flagged Google pitch. Built Copilot for SMB + Teams Phone consolidation pitch deck.' }
+    ]
+  },
+  {
+    id: 'southridge', name: 'Southridge Video', industry: 'Manufacturing', tier: 3,
+    employees: 880, whitespace: 360000, renewalDays: 260, renewalDate: 'Jan 17, 2027',
+    health: 'Healthy', partner: 'CompuCom',
+    description: 'Video Production Equipment | Current Base: M365 E3',
+    situation: { headline: 'Stable mid-market — Azure storage attach play', detail: 'Stable customer. CompuCom flagged opportunity for Azure Blob storage as the company struggles with media archive costs on-prem. Low-friction add-on with clear ROI.' },
+    deal: { name: 'Azure Blob Archive Storage', value: '$220K ACR', stage: 'Develop', close: 'Q3 FY27' },
+    stakeholders: [
+      { name: 'Aaron Hawkins', role: 'IT Director', tag: 'Champion', notes: 'On-prem storage cost pain.', color: 'blue' }
+    ],
+    vteam: [
+      { name: 'Storage TSP', role: 'Digital Sales', status: 'active' },
+      { name: 'CompuCom', role: 'Reseller', status: 'active', purple: true }
+    ],
+    meddpicc: [
+      { letter: 'M', label: 'Metrics', state: 'green', value: '60% storage cost reduction' },
+      { letter: 'E', label: 'Economic Buyer', state: 'amber', value: 'IT Director' },
+      { letter: 'D', label: 'Decision Criteria', state: 'green', value: 'Cost + reliability' },
+      { letter: 'P', label: 'Paper Process', state: 'green', value: 'CSP add-on' },
+      { letter: 'C', label: 'Champion', state: 'green', value: 'IT Director' }
+    ],
+    timeline: [
+      { icon: '📼', color: 'blue', title: 'Archive Migration Scoping', when: '2 Weeks Ago', body: 'CompuCom + MS scoped 800TB media archive migration. Clear cost win vs current SAN.' }
+    ]
+  }
+];
+
+// ============== STATE ==============
+let chartInitialized = false;
+let portfolioFilters = { tier: 'all', industry: 'all', search: '' };
+let portfolioSort = { key: 'whitespace', dir: 'desc' };
+let currentAccountId = 'contoso';
+
+// ============== TAB MANAGEMENT ==============
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('is-active'));
+  document.getElementById('btn-' + tabId).classList.add('is-active');
+
+  if (tabId === 'customer360') {
+    document.getElementById('header-territory').classList.add('hidden');
+    document.getElementById('header-customer').classList.remove('hidden');
+    renderCustomer360(currentAccountId);
+  } else {
+    document.getElementById('header-customer').classList.add('hidden');
+    document.getElementById('header-territory').classList.remove('hidden');
+
+    const titles = {
+      dashboard:  ['Morning Briefing',     'Real-time territory pulse • ' + accounts.length + ' Accounts'],
+      portfolio:  ['Account Portfolio',    accounts.length + ' accounts under coverage'],
+      whitespace: ['Licensing Whitespace', 'Untapped ARR opportunities by motion'],
+      forecast:   ['Pipeline Forecast',    'Weighted vs unweighted by quarter'],
+      velocity:   ['Velocity Operations',  'Save-the-quarter contingency plays']
+    };
+    document.getElementById('header-title').innerText = titles[tabId][0];
+    document.getElementById('header-subtitle').innerText = titles[tabId][1];
+  }
+
+  if (tabId === 'forecast' && !chartInitialized) {
+    initChart();
+    chartInitialized = true;
+  }
+
+  if (tabId === 'portfolio') renderPortfolio();
+}
+
+function openAccount(accountId) {
+  currentAccountId = accountId;
+  updateSidebarAccount();
+  switchTab('customer360');
+}
+
+function updateSidebarAccount() {
+  const a = accounts.find(x => x.id === currentAccountId);
+  if (!a) return;
+  document.getElementById('sidebar-account-name').innerText = a.name;
+  document.getElementById('sidebar-account-tier').innerText = 'Tier ' + a.tier;
+}
+
+// ============== CUSTOMER 360 RENDERING ==============
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function tierPillClass(tier) {
+  return tier === 1 ? 'pill--strategic' : (tier === 2 ? 'pill--strategic-2' : 'pill--strategic-3');
+}
+function tierPillLabel(tier) {
+  return tier === 1 ? 'Tier 1 Strategic' : (tier === 2 ? 'Tier 2 Growth' : 'Tier 3 Volume');
+}
+function healthClass(h) { return h === 'Healthy' ? 'customer-stat__value--green' : (h === 'Watch' ? 'customer-stat__value--amber' : 'customer-stat__value--red'); }
+function situationClass(h) { return h === 'Healthy' ? '' : (h === 'Watch' ? 'situation--watch' : 'situation--risk'); }
+
+function renewalText(days) {
+  if (days <= 90) return { txt: days + ' days', cls: 'customer-stat__value--red' };
+  if (days <= 180) return { txt: days + ' days', cls: 'customer-stat__value--amber' };
+  return { txt: days + ' days', cls: '' };
+}
+
+function renderCustomer360(id) {
+  const a = accounts.find(x => x.id === id);
+  if (!a) return;
+
+  // Header
+  document.getElementById('cust-title').innerText = a.name;
+  const tierPill = document.getElementById('cust-tier-pill');
+  tierPill.className = tierPillClass(a.tier);
+  tierPill.innerText = tierPillLabel(a.tier);
+  document.getElementById('cust-meta').innerText = a.description + ' | ' + a.employees.toLocaleString() + ' Employees';
+
+  const renewal = renewalText(a.renewalDays);
+  const renewalEl = document.getElementById('cust-renewal');
+  renewalEl.innerText = a.renewalDate + ' (' + renewal.txt + ')';
+  renewalEl.className = 'customer-stat__value ' + renewal.cls;
+
+  document.getElementById('cust-whitespace').innerText = fmtMoney(a.whitespace);
+
+  const healthEl = document.getElementById('cust-health');
+  healthEl.innerText = a.health;
+  healthEl.className = 'customer-stat__value ' + healthClass(a.health);
+
+  // Body
+  const stakeholdersHtml = a.stakeholders.map(s => `
+    <div class="stakeholder stakeholder--${s.color}">
+      <p class="stakeholder__name">${escapeHtml(s.name)} — ${escapeHtml(s.role)}</p>
+      <p class="stakeholder__sub">${escapeHtml(s.tag)} • ${escapeHtml(s.notes)}</p>
+    </div>
+  `).join('');
+
+  const vteamHtml = a.vteam.map(v => `
+    <div class="vteam__row">
+      <div>
+        <p class="vteam__name">${escapeHtml(v.name)}</p>
+        <p class="vteam__role ${v.purple ? 'vteam__role--purple' : ''}">${escapeHtml(v.role)}</p>
+      </div>
+      <span class="vteam__status vteam__status--${v.status}">${v.status === 'active' ? 'Active' : 'Pending'}</span>
+    </div>
+  `).join('');
+
+  const meddpiccHtml = a.meddpicc.map(m => `
+    <div class="meddpicc__row meddpicc__row--${m.state}">
+      <span class="meddpicc__label">${m.letter} - ${escapeHtml(m.label)}</span>
+      <span class="meddpicc__pill meddpicc__pill--${m.state}">${escapeHtml(m.value)}</span>
+    </div>
+  `).join('');
+
+  const timelineHtml = a.timeline.map((t, i) => `
+    <div class="timeline-item">
+      <div class="timeline-icon timeline-icon--${t.color}">${t.icon}</div>
+      <div class="timeline-card">
+        <div class="timeline-card__head">
+          <div class="timeline-card__title">${escapeHtml(t.title)}</div>
+          <time class="timeline-card__time ${i === 0 ? 'timeline-card__time--badge' : ''}">${escapeHtml(t.when)}</time>
+        </div>
+        <div class="timeline-card__body">${escapeHtml(t.body)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const dealStageColors = { 'Qualify': 'amber', 'Develop': 'blue', 'Propose': 'blue', 'Negotiate': 'emerald' };
+
+  const html = `
+    <div class="grid grid--3">
+
+      <div class="col-span-2" style="display:flex;flex-direction:column;gap:24px;">
+
+        <div class="card card--accent">
+          <h3 class="card__header" style="border-bottom:none;padding-bottom:0;margin-bottom:4px;"><span>📌</span> Current Situation</h3>
+
+          <div class="situation ${situationClass(a.health)}">
+            <p class="situation__label">What's happening right now</p>
+            <p class="situation__headline">${escapeHtml(a.situation.headline)}</p>
+            <p class="situation__detail">${escapeHtml(a.situation.detail)}</p>
+          </div>
+
+          <div class="deal-card">
+            <p class="deal-card__label">Active Deal</p>
+            <p class="deal-card__name">${escapeHtml(a.deal.name)}</p>
+            <div class="deal-card__metrics">
+              <div>
+                <p class="deal-card__metric-label">Value</p>
+                <p class="deal-card__metric-value">${escapeHtml(a.deal.value)}</p>
+              </div>
+              <div>
+                <p class="deal-card__metric-label">Stage</p>
+                <p class="deal-card__metric-value">${escapeHtml(a.deal.stage)}</p>
+              </div>
+              <div>
+                <p class="deal-card__metric-label">Target Close</p>
+                <p class="deal-card__metric-value">${escapeHtml(a.deal.close)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card__header" style="justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:8px;">📅 Engagement Timeline</span>
+            <button class="btn-secondary">+ Log Activity</button>
+          </h3>
+          <div class="timeline">${timelineHtml}</div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:24px;">
+
+        <div class="card">
+          <h3 class="card__header"><span>📊</span> MEDDPICC</h3>
+          <div class="meddpicc">${meddpiccHtml}</div>
+        </div>
+
+        <div class="card">
+          <h3 class="card__header"><span>🎯</span> Stakeholder Map</h3>
+          <div class="stakeholders">${stakeholdersHtml}</div>
+        </div>
+
+        <div class="card">
+          <h3 class="card__header"><span>🤝</span> V-Team Roster</h3>
+          <div class="vteam">${vteamHtml}</div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById('customer360-content').innerHTML = html;
+}
+
+// ============== STRATEGY EXPAND/COLLAPSE ==============
+function toggleStrategy(btn) {
+  const detail = btn.closest('li').querySelector('.strategy-detail');
+  const label = btn.querySelector('.label');
+  const isOpen = !detail.classList.contains('hidden');
+  if (isOpen) { detail.classList.add('hidden'); btn.classList.remove('is-open'); label.innerText = 'Expand Strategy'; }
+  else { detail.classList.remove('hidden'); btn.classList.add('is-open'); label.innerText = 'Collapse Strategy'; }
+}
+
+function toggleSignal(btn) {
+  const detail = btn.parentElement.querySelector('.signal-detail');
+  const label = btn.querySelector('.label');
+  const arrow = btn.querySelector('.arrow');
+  const isOpen = !detail.classList.contains('hidden');
+  if (isOpen) { detail.classList.add('hidden'); label.innerText = 'Click for Microsoft AE Angle'; arrow.innerText = '↗'; }
+  else { detail.classList.remove('hidden'); label.innerText = 'Hide AE Angle'; arrow.innerText = '↑'; }
+}
+
+// ============== PORTFOLIO ==============
+function fmtMoney(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return '$' + Math.round(n / 1000) + 'K';
+  return '$' + n;
+}
+
+function fmtRenewal(days) {
+  if (days <= 90)  return { text: days + 'd', cls: 'row__renewal--rose'  };
+  if (days <= 180) return { text: days + 'd', cls: 'row__renewal--amber' };
+  return { text: days + 'd', cls: 'row__renewal--slate' };
+}
+
+function renderPortfolio() {
+  let list = accounts.filter(a => {
+    if (portfolioFilters.tier !== 'all' && a.tier !== parseInt(portfolioFilters.tier)) return false;
+    if (portfolioFilters.industry !== 'all' && a.industry !== portfolioFilters.industry) return false;
+    if (portfolioFilters.search && !a.name.toLowerCase().includes(portfolioFilters.search.toLowerCase())) return false;
+    return true;
+  });
+
+  list.sort((a, b) => {
+    let av = a[portfolioSort.key], bv = b[portfolioSort.key];
+    if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if (av < bv) return portfolioSort.dir === 'asc' ? -1 : 1;
+    if (av > bv) return portfolioSort.dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  document.getElementById('stat-total').innerText = accounts.length;
+  document.getElementById('stat-tier1').innerText = accounts.filter(a => a.tier === 1).length;
+  document.getElementById('stat-whitespace').innerText = fmtMoney(accounts.reduce((s, a) => s + a.whitespace, 0));
+  document.getElementById('stat-risk').innerText = accounts.filter(a => a.renewalDays <= 90).length;
+  document.getElementById('portfolio-count').innerText = list.length;
+
+  const body = document.getElementById('portfolio-body');
+  if (list.length === 0) {
+    body.innerHTML = '<tr><td colspan="8" class="row__empty">No accounts match your filters.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = list.map(a => {
+    const renewal = fmtRenewal(a.renewalDays);
+    const dotKey = a.health === 'Healthy' ? 'healthy' : (a.health === 'Watch' ? 'watch' : 'risk');
+    const healthKey = dotKey;
+    return `<tr class="row--clickable" onclick="openAccount('${a.id}')">
+      <td><div class="row__name"><span class="row__dot row__dot--${dotKey}"></span>${escapeHtml(a.name)}</div></td>
+      <td>${escapeHtml(a.industry)}</td>
+      <td><span class="tier-badge tier-badge--${a.tier}">Tier ${a.tier}</span></td>
+      <td>${a.employees.toLocaleString()}</td>
+      <td class="row__money">${fmtMoney(a.whitespace)}</td>
+      <td class="${renewal.cls}">${renewal.text}</td>
+      <td><span class="health-badge health-badge--${healthKey}">${escapeHtml(a.health)}</span></td>
+      <td>${escapeHtml(a.partner)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sortPortfolio(key) {
+  const map = { name: 'name', tier: 'tier', employees: 'employees', whitespace: 'whitespace', renewal: 'renewalDays' };
+  const dataKey = map[key];
+  if (portfolioSort.key === dataKey) portfolioSort.dir = portfolioSort.dir === 'asc' ? 'desc' : 'asc';
+  else { portfolioSort.key = dataKey; portfolioSort.dir = (key === 'name' || key === 'renewal') ? 'asc' : 'desc'; }
+  renderPortfolio();
+}
+
+function setupPortfolioFilters() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      const value = btn.dataset.value;
+      portfolioFilters[filter] = value;
+      document.querySelectorAll('.filter-btn[data-filter="' + filter + '"]').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      renderPortfolio();
+    });
+  });
+  const search = document.getElementById('portfolio-search');
+  if (search) search.addEventListener('input', e => { portfolioFilters.search = e.target.value; renderPortfolio(); });
+}
+
+// ============== CHART ==============
+function initChart() {
+  const ctx = document.getElementById('forecastChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+      datasets: [
+        { label: 'Unweighted Pipeline ($M)', data: [15, 22, 30, 42],   backgroundColor: '#CBD5E1', borderRadius: 4 },
+        { label: 'Weighted Forecast ($M)',   data: [12, 14, 18, 24.5], backgroundColor: '#2563EB', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { beginAtZero: true, grid: { borderDash: [2, 4], color: '#e2e8f0' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ============== INIT ==============
+document.addEventListener('DOMContentLoaded', () => {
+  setupPortfolioFilters();
+  renderPortfolio();
+  updateSidebarAccount();
+});
+</script>
 </body>
 </html>
