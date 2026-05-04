@@ -12,14 +12,11 @@
         .tag-active { background-color: #2563EB; color: white; border-color: #2563EB; }
         .comp-active { background-color: #DC2626; color: white; border-color: #DC2626; }
         
-        /* Custom scrollbar */
+        /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Modal Overlay */
-        .modal-bg { background-color: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
@@ -40,11 +37,11 @@
                 <button onclick="switchTab('velocity')" id="btn-velocity" class="nav-btn w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm">Velocity (Save Qtr)</button>
             </nav>
 
-            <div class="px-4 mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Active Deal View</div>
+            <div class="px-4 mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Deal Execution</div>
             <nav class="px-4 space-y-1">
-                <button onclick="switchTab('customer360')" id="btn-customer360" class="nav-btn flex items-center justify-between w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm border border-slate-700 hover:border-blue-500 hidden">
-                    <span id="sidebar-active-account">Select Account</span>
-                    <span id="sidebar-active-tier" class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded">--</span>
+                <button onclick="switchTab('customer360')" id="btn-customer360" class="nav-btn flex items-center justify-between w-full text-left px-4 py-2.5 rounded hover:bg-slate-800 text-slate-300 transition text-sm border border-slate-700 hover:border-blue-500">
+                    <span>Contoso Retail</span>
+                    <span class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded">Tier 1</span>
                 </button>
             </nav>
         </div>
@@ -81,23 +78,23 @@
         <header id="header-customer" class="bg-white border-b border-slate-200 p-6 flex justify-between items-start shadow-sm z-10 sticky top-0 hidden">
             <div>
                 <div class="flex items-center space-x-3 mb-1">
-                    <h2 class="text-3xl font-bold text-slate-900" id="c360-name">Account Name</h2>
-                    <span id="c360-tier" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Tier</span>
+                    <h2 class="text-3xl font-bold text-slate-900">Contoso Retail</h2>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Tier 1 Strategic</span>
                 </div>
-                <p class="text-sm text-slate-500"><span id="c360-industry">Industry</span> | <span id="c360-partner">Partner</span> | Base: <span id="c360-base">Current Base</span></p>
+                <p class="text-sm text-slate-500">Global Omnichannel Retailer | 15,000 Employees | Current Base: M365 E3 & F1</p>
             </div>
             <div class="flex space-x-6 text-sm bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div>
                     <p class="text-slate-500 font-semibold mb-1">EA Renewal Date</p>
-                    <p class="font-bold text-red-600 text-lg" id="c360-renewal">--</p>
+                    <p class="font-bold text-red-600 text-lg">Nov 15, 2026</p>
                 </div>
                 <div class="border-l pl-6 border-slate-200">
                     <p class="text-slate-500 font-semibold mb-1">Whitespace ARR</p>
-                    <p class="font-bold text-green-600 text-lg" id="c360-whitespace">--</p>
+                    <p class="font-bold text-green-600 text-lg">$4.5M</p>
                 </div>
                 <div class="border-l pl-6 border-slate-200">
                     <p class="text-slate-500 font-semibold mb-1">Cloud Commit</p>
-                    <p class="font-bold text-blue-600 text-lg" id="c360-commit">--</p>
+                    <p class="font-bold text-blue-600 text-lg">65% Burned</p>
                 </div>
             </div>
         </header>
@@ -107,79 +104,47 @@
             <div id="tab-dashboard" class="tab-content">
                 <div class="grid grid-cols-3 gap-6">
                     <div class="col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-lg font-bold mb-4 border-b border-slate-100 pb-3 flex items-center"><span class="mr-2">🎯</span> Strategic Execution Tasks</h3>
-                        <ul class="space-y-4">
-                            <li class="border border-slate-200 rounded-lg p-4 bg-slate-50 hover:border-blue-300 transition">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-start">
-                                        <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
-                                        <div>
-                                            <p class="font-bold text-slate-800 text-lg">Draft E5 Cost-Savings Pitch (Contoso Retail)</p>
-                                            <p class="text-sm text-slate-500 mt-0.5">Tier 1 • Consolidate Zoom, Okta, & Crowdstrike for CFO meeting.</p>
-                                        </div>
-                                    </div>
-                                    <button onclick="toggleStrategy('strat-1')" class="text-xs bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded hover:bg-blue-200 transition">Expand Strategy ▼</button>
-                                </div>
-                                <div id="strat-1" class="hidden mt-4 pt-4 border-t border-slate-200">
-                                    <div class="grid grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <p class="font-bold text-slate-700 mb-1">AE Execution Motion:</p>
-                                            <ul class="list-disc pl-4 text-slate-600 space-y-1">
-                                                <li>Run Microsoft Value Calculator to prove $1.2M hard savings.</li>
-                                                <li>Engage FastTrack team for deployment planning to mitigate migration risk.</li>
-                                                <li>Validate MEDDPICC: Secure CFO as Economic Buyer.</li>
-                                            </ul>
-                                        </div>
-                                        <div class="bg-white p-3 rounded border border-slate-200">
-                                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">V-Team Required</p>
-                                            <p class="font-semibold text-blue-600">Sarah J. (Security SSP)</p>
-                                            <p class="font-semibold text-blue-600">David C. (Modern Work CSA)</p>
-                                        </div>
-                                    </div>
+                        <h3 class="text-lg font-bold mb-4 border-b border-slate-100 pb-3 flex items-center"><span class="mr-2">🎯</span> High Leverage Tasks</h3>
+                        <ul class="space-y-5">
+                            <li class="flex items-start group">
+                                <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
+                                <div>
+                                    <p class="font-bold text-slate-800 group-hover:text-blue-600 transition cursor-pointer" onclick="switchTab('customer360')">Draft E5 Cost-Savings Pitch (Contoso Retail)</p>
+                                    <p class="text-sm text-slate-500 mt-0.5">Tier 1 • Consolidate Zoom, Okta, & Crowdstrike for CFO meeting.</p>
                                 </div>
                             </li>
-                            <li class="border border-slate-200 rounded-lg p-4 bg-slate-50 hover:border-blue-300 transition">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-start">
-                                        <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
-                                        <div>
-                                            <p class="font-bold text-slate-800 text-lg">Accenture Partner Sync (Northwind Traders)</p>
-                                            <p class="text-sm text-slate-500 mt-0.5">Tier 1 • Align on Copilot readiness workshop SOW.</p>
-                                        </div>
-                                    </div>
-                                    <button onclick="toggleStrategy('strat-2')" class="text-xs bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded hover:bg-blue-200 transition">Expand Strategy ▼</button>
+                            <li class="flex items-start group">
+                                <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
+                                <div>
+                                    <p class="font-bold text-slate-800">F3 Frontline Expansion Call (Fabrikam Mfg)</p>
+                                    <p class="text-sm text-slate-500 mt-0.5">Tier 2 • Adding 500 shift workers, push Power Apps for inventory.</p>
                                 </div>
-                                <div id="strat-2" class="hidden mt-4 pt-4 border-t border-slate-200">
-                                    <div class="grid grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <p class="font-bold text-slate-700 mb-1">AE Execution Motion:</p>
-                                            <ul class="list-disc pl-4 text-slate-600 space-y-1">
-                                                <li>Review Partner SOW for data governance audit (Purview).</li>
-                                                <li>Nominate deal for <strong>ECIF Funding</strong> to subsidize partner deployment costs and accelerate the close.</li>
-                                            </ul>
-                                        </div>
-                                        <div class="bg-white p-3 rounded border border-slate-200">
-                                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Partner Margin / Incentive</p>
-                                            <p class="font-semibold text-emerald-600">CSP Margin + Deployment Services</p>
-                                        </div>
-                                    </div>
+                            </li>
+                            <li class="flex items-start group">
+                                <input type="checkbox" class="mt-1 mr-4 h-5 w-5 text-blue-600 rounded cursor-pointer">
+                                <div>
+                                    <p class="font-bold text-slate-800">Accenture Partner Sync (Northwind Traders)</p>
+                                    <p class="text-sm text-slate-500 mt-0.5">Tier 1 • Align on Copilot readiness workshop SOW.</p>
                                 </div>
                             </li>
                         </ul>
                     </div>
-
                     <div class="col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-bold mb-4 border-b border-slate-100 pb-3 flex items-center"><span class="mr-2">📡</span> Market Signals</h3>
                         <div class="space-y-4">
-                            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:border-blue-400 hover:shadow-md transition cursor-pointer group" onclick="openNewsModal('news-1')">
-                                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Retail Trend • WSJ</p>
-                                <p class="text-sm font-bold text-slate-800 group-hover:text-blue-600">Adventure Works pushing for hyper-personalized marketing.</p>
-                                <p class="text-xs text-slate-500 mt-2 font-medium">Click for Microsoft AE Angle ↗</p>
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 shadow-sm">
+                                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Retail Trend</p>
+                                <p class="text-sm font-bold text-slate-800">Adventure Works pushing for hyper-personalized marketing.</p>
+                                <div class="mt-3 pt-3 border-t border-blue-100">
+                                    <p class="text-xs font-semibold text-slate-600">Action: Pitch Azure OpenAI + D365 Customer Insights.</p>
+                                </div>
                             </div>
-                            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:border-red-400 hover:shadow-md transition cursor-pointer group" onclick="openNewsModal('news-2')">
-                                <p class="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1">Mfg Alert • Forbes</p>
-                                <p class="text-sm font-bold text-slate-800 group-hover:text-red-600">Trey Research faces legacy OT integration delays.</p>
-                                <p class="text-xs text-slate-500 mt-2 font-medium">Click for Microsoft AE Angle ↗</p>
+                            <div class="bg-red-50 p-4 rounded-lg border border-red-100 shadow-sm">
+                                <p class="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1">Mfg Alert</p>
+                                <p class="text-sm font-bold text-slate-800">Trey Research faces legacy OT integration delays.</p>
+                                <div class="mt-3 pt-3 border-t border-red-100">
+                                    <p class="text-xs font-semibold text-slate-600">Action: Position Entra ID as mandatory prerequisite.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -189,10 +154,7 @@
             <div id="tab-portfolio" class="tab-content hidden">
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800">Account Prioritization</h3>
-                            <p class="text-sm text-slate-500">Click any account row to open the deep-dive Customer 360 profile.</p>
-                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Account Prioritization</h3>
                         <button class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 py-1.5 px-4 rounded font-medium transition">Filter Views</button>
                     </div>
                     <table class="w-full text-left border-collapse">
@@ -206,36 +168,130 @@
                             </tr>
                         </thead>
                         <tbody class="text-sm">
-                            <tr class="border-b border-slate-100 hover:bg-blue-50 transition cursor-pointer group" onclick="loadCustomerProfile('contoso')">
-                                <td class="p-4 font-bold text-slate-800 flex items-center group-hover:text-blue-700"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>Contoso Retail</td>
+                            <tr class="border-b border-slate-100 hover:bg-blue-50 transition cursor-pointer" onclick="switchTab('customer360')">
+                                <td class="p-4 font-bold text-slate-800 flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>Contoso Retail</td>
                                 <td class="p-4 text-slate-600">Retail</td>
                                 <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 1</span></td>
                                 <td class="p-4 font-bold text-green-600">$8.5M</td>
-                                <td class="p-4 font-semibold text-slate-700">Accenture ↗</td>
+                                <td class="p-4 text-slate-600">Accenture</td>
                             </tr>
-                            <tr class="border-b border-slate-100 hover:bg-blue-50 transition cursor-pointer group" onclick="loadCustomerProfile('fabrikam')">
-                                <td class="p-4 font-bold text-slate-800 flex items-center group-hover:text-blue-700"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>Fabrikam Mfg</td>
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                <td class="p-4 font-semibold text-slate-800">Fabrikam Mfg</td>
                                 <td class="p-4 text-slate-600">Manufacturing</td>
                                 <td class="p-4"><span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 2</span></td>
-                                <td class="p-4 font-bold text-green-600">$3.2M</td>
-                                <td class="p-4 font-semibold text-slate-700">Avanade ↗</td>
+                                <td class="p-4 font-medium text-slate-700">$3.2M</td>
+                                <td class="p-4 text-slate-600">Avanade</td>
                             </tr>
-                            <tr class="border-b border-slate-100 hover:bg-blue-50 transition cursor-pointer group" onclick="loadCustomerProfile('northwind')">
-                                <td class="p-4 font-bold text-slate-800 flex items-center group-hover:text-blue-700"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>Northwind Traders</td>
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                <td class="p-4 font-semibold text-slate-800">Northwind Traders</td>
                                 <td class="p-4 text-slate-600">Retail</td>
                                 <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 1</span></td>
-                                <td class="p-4 font-bold text-green-600">$6.1M</td>
-                                <td class="p-4 font-semibold text-slate-700">EY ↗</td>
+                                <td class="p-4 font-medium text-slate-700">$6.1M</td>
+                                <td class="p-4 text-slate-600">EY</td>
                             </tr>
-                            <tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="loadCustomerProfile('tailspin')">
-                                <td class="p-4 font-bold text-slate-800 flex items-center group-hover:text-blue-700"><span class="w-2 h-2 rounded-full bg-slate-400 mr-2"></span>Tailspin Toys</td>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-4 font-semibold text-slate-800">Tailspin Toys</td>
                                 <td class="p-4 text-slate-600">Manufacturing</td>
                                 <td class="p-4"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-sm text-xs font-bold">Tier 3</span></td>
-                                <td class="p-4 font-bold text-green-600">$600K</td>
-                                <td class="p-4 font-semibold text-slate-700">Self-Serve / Disti ↗</td>
+                                <td class="p-4 font-medium text-slate-700">$600K</td>
+                                <td class="p-4 text-slate-600">Self-Serve / Disti</td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div id="tab-whitespace" class="tab-content hidden">
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Corporate E-Suite Upsell</h3>
+                                <p class="text-sm text-slate-500">E3 to E5 step-ups for Copilot readiness.</p>
+                            </div>
+                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded border border-blue-200">Hero Motion</span>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-blue-300 transition cursor-pointer" onclick="switchTab('customer360')">
+                                <div><p class="font-bold text-slate-800">Contoso Retail</p><p class="text-xs text-slate-500 mt-1">Currently: E3 (no Teams)</p></div>
+                                <div class="text-right"><p class="text-green-600 font-bold text-lg">+$1.2M</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: E5 Step-up</p></div>
+                            </li>
+                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div><p class="font-bold text-slate-800">Proseware</p><p class="text-xs text-slate-500 mt-1">Currently: O365 E1</p></div>
+                                <div class="text-right"><p class="text-green-600 font-bold text-lg">+$800K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 E3</p></div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Frontline F-Suite Surge</h3>
+                                <p class="text-sm text-slate-500">Untapped factory floor and store workers.</p>
+                            </div>
+                            <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded border border-emerald-200">Volume Play</span>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div><p class="font-bold text-slate-800">Fabrikam Mfg</p><p class="text-xs text-slate-500 mt-1">3,000 Unlicensed Floor Workers</p></div>
+                                <div class="text-right"><p class="text-blue-600 font-bold text-lg">+$450K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 F3</p></div>
+                            </li>
+                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div><p class="font-bold text-slate-800">Adventure Works</p><p class="text-xs text-slate-500 mt-1">Seasonal Retail Staff</p></div>
+                                <div class="text-right"><p class="text-blue-600 font-bold text-lg">+$220K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 F1</p></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-forecast" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6">Weighted vs. Unweighted Pipeline</h3>
+                    <div class="h-72">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-emerald-600 text-6xl font-black">80%</div>
+                        <h4 class="font-bold text-emerald-900 text-lg">Commit Bucket</h4>
+                        <p class="text-sm text-emerald-700 mb-4">Sitting in legal/procurement.</p>
+                        <p class="text-4xl font-black text-emerald-600">$18.5M</p>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-xl border border-amber-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-amber-600 text-6xl font-black">40%</div>
+                        <h4 class="font-bold text-amber-900 text-lg">Upside Bucket</h4>
+                        <p class="text-sm text-amber-700 mb-4">Validated case, paper process pending.</p>
+                        <p class="text-4xl font-black text-amber-600">$12.0M</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-velocity" class="tab-content hidden">
+                <div class="bg-rose-50 border-l-4 border-rose-600 p-8 rounded-r-xl shadow-sm border-t border-b border-r border-rose-100">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-3">🚨</span>
+                        <h3 class="text-2xl font-bold text-rose-900">Contingency Plan: Save the Quarter</h3>
+                    </div>
+                    <p class="text-rose-700 text-base mb-8 ml-9 max-w-3xl">If a multi-million dollar "Commit" deal slips, do not panic. Execute these high-velocity, low-friction add-ons to bridge the immediate revenue gap.</p>
+                    
+                    <div class="grid grid-cols-3 gap-6 ml-9">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
+                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 1</span>
+                            <h4 class="font-bold text-slate-800 text-lg mt-3">Executive Copilot Pilots</h4>
+                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Target existing E3/E5 customers. Pitch a 50-seat Copilot pilot for the C-suite. Closes in days via a simple administrative EA add-on.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
+                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 2</span>
+                            <h4 class="font-bold text-slate-800 text-lg mt-3">Azure Consumption Drive</h4>
+                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Engage Cloud Solution Architects (CSAs) to spin up purchased-but-unused Azure workloads. Direct and immediate hit to billed revenue.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
+                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 3</span>
+                            <h4 class="font-bold text-slate-800 text-lg mt-3">Frontline (F5) Security</h4>
+                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Audit Tier 2 manufacturing accounts. Sell the F5 Security compliance add-on for mobile floor workers handling company data.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -243,9 +299,10 @@
                 <div class="grid grid-cols-3 gap-6">
 
                     <div class="col-span-2 space-y-6">
+                        
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-200 border-t-4 border-t-blue-600">
-                            <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center"><span class="mr-2">🎙️</span> AE Active Listening Engine</h3>
-                            <p class="text-sm text-slate-500 mb-5">Click tags mentioned by <span id="dyn-cname" class="font-bold">the customer</span> to generate a TCO takeout strategy.</p>
+                            <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center"><span class="mr-2">🎙️</span> Active Listening & Takeout Engine</h3>
+                            <p class="text-sm text-slate-500 mb-5">Click tags mentioned by the customer to generate a TCO-driven takeout strategy.</p>
                             
                             <div class="flex flex-wrap gap-2 mb-6" id="tag-container">
                                 <button onclick="toggleTag('sprawl', this, 'tag-active')" class="px-4 py-2 rounded-full border border-slate-300 text-sm font-semibold text-slate-700 hover:border-blue-500 transition">"Too many vendors"</button>
@@ -256,7 +313,7 @@
 
                             <div id="recommendation-engine" class="bg-slate-50 p-6 rounded-lg border border-slate-200 hidden">
                                 <div class="flex justify-between items-center mb-4 border-b border-slate-200 pb-3">
-                                    <h4 class="font-bold text-blue-900 text-lg">Strategic Playbook Generated</h4>
+                                    <h4 class="font-bold text-blue-900 text-lg">Strategic Playbook</h4>
                                 </div>
                                 <div id="pitch-content" class="space-y-4 text-sm text-slate-700 leading-relaxed text-base"></div>
                                 <div class="mt-6 bg-white p-4 rounded-lg border border-slate-200 grid grid-cols-3 gap-4 text-center shadow-sm">
@@ -268,123 +325,114 @@
                         </div>
 
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-lg font-bold mb-6 text-slate-900 flex items-center"><span class="mr-2">📅</span> Account Intel & History</h3>
-                            <div class="bg-slate-50 p-4 rounded border border-slate-200">
-                                <p id="dyn-history-text" class="text-sm text-slate-700 leading-relaxed">Select an account to view history.</p>
+                            <h3 class="text-lg font-bold mb-6 flex justify-between items-center text-slate-900">
+                                <span class="flex items-center"><span class="mr-2">📅</span> Engagement Timeline</span>
+                                <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 text-xs rounded font-bold transition border border-slate-200">+ Log Activity</button>
+                            </h3>
+                            <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                                
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-500 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">📝</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between space-x-2 mb-2">
+                                            <div class="font-bold text-slate-900 text-sm">CIO Strategy Sync</div>
+                                            <time class="font-bold text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Last Week</time>
+                                        </div>
+                                        <div class="text-sm text-slate-600">Presented 'Do More With Less' TCO analysis. CIO admitted they are spending $1.2M on Zoom and Okta combined. E5 step-up seed planted.</div>
+                                    </div>
+                                </div>
+
+                                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-600 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">🎥</div>
+                                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                                        <div class="flex items-center justify-between space-x-2 mb-2">
+                                            <div class="font-bold text-slate-900 text-sm">Copilot Art of the Possible</div>
+                                            <time class="font-semibold text-xs text-slate-400">3 Weeks Ago</time>
+                                        </div>
+                                        <div class="text-sm text-slate-600">Tech Specialist ran Copilot demo for Marketing team. VP of Marketing loved prompt generation. Need to secure E3 prerequisite first.</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="space-y-6">
+                        
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">🤝</span> V-Team Orchestration</h3>
-                            <div class="space-y-3" id="dyn-vteam-container">
+                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">📊</span> MEDDPICC (E5 Deal)</h3>
+                            <div class="grid grid-cols-1 gap-3 text-sm">
+                                <div class="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-100 rounded">
+                                    <span class="font-bold text-emerald-900">M - Metrics</span>
+                                    <span class="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">Verified: $1.2M Savings</span>
                                 </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-whitespace" class="tab-content hidden">
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">Corporate E-Suite & AI Readiness</h3>
-                                <p class="text-sm text-slate-500">Track E3 to E5 step-ups and Copilot prerequisites.</p>
+                                <div class="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-100 rounded">
+                                    <span class="font-bold text-emerald-900">E - Economic Buyer</span>
+                                    <span class="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">Verified: CFO Met</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded">
+                                    <span class="font-bold text-amber-900">D - Decision Criteria</span>
+                                    <span class="text-xs font-bold bg-amber-200 text-amber-800 px-2 py-0.5 rounded">Pending Security Audit</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2.5 bg-rose-50 border border-rose-200 rounded">
+                                    <span class="font-bold text-rose-900">P - Paper Process</span>
+                                    <span class="text-xs font-bold bg-rose-200 text-rose-800 px-2 py-0.5 rounded">Unknown</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-100 rounded">
+                                    <span class="font-bold text-emerald-900">C - Champion</span>
+                                    <span class="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">VP of Infrastructure</span>
+                                </div>
                             </div>
-                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded border border-blue-200">Hero Motion</span>
                         </div>
-                        <ul class="space-y-4">
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-blue-300 transition cursor-pointer" onclick="loadCustomerProfile('contoso')">
-                                <div><p class="font-bold text-slate-800">Contoso Retail</p><p class="text-xs text-slate-500 mt-1">Status: Blocked - Needs Security Consolidation</p></div>
-                                <div class="text-right"><p class="text-green-600 font-bold text-lg">+$1.2M</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: E5 Step-up</p></div>
-                            </li>
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-                                <div><p class="font-bold text-slate-800">Proseware</p><p class="text-xs text-slate-500 mt-1">Status: Ready for Copilot Pitch</p></div>
-                                <div class="text-right"><p class="text-blue-600 font-bold text-lg">+$350K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: 1k Copilot Seats</p></div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">Frontline F-Suite Attach</h3>
-                                <p class="text-sm text-slate-500">Untapped factory floor and store workers.</p>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">🎯</span> Stakeholder Map</h3>
+                            <div class="space-y-3">
+                                <div class="p-3 border rounded border-emerald-200 bg-emerald-50 relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+                                    <p class="text-sm font-bold text-slate-900">Sarah Jenkins - CFO</p>
+                                    <p class="text-xs text-emerald-700 mt-1">Economic Buyer • Cares about EA Consolidation & TCO</p>
+                                </div>
+                                <div class="p-3 border rounded border-blue-200 bg-blue-50 relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                                    <p class="text-sm font-bold text-slate-900">David Chen - VP Infra</p>
+                                    <p class="text-xs text-blue-700 mt-1">Champion • Wants to reduce Shadow IT</p>
+                                </div>
+                                <div class="p-3 border rounded border-rose-200 bg-rose-50 relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-rose-500"></div>
+                                    <p class="text-sm font-bold text-slate-900">Elena Rodriguez - CISO</p>
+                                    <p class="text-xs text-rose-700 mt-1">Evaluator • Prefers CrowdStrike. Needs Defender demo.</p>
+                                </div>
                             </div>
-                            <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded border border-emerald-200">Volume Play</span>
                         </div>
-                        <ul class="space-y-4">
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-                                <div><p class="font-bold text-slate-800">Fabrikam Mfg</p><p class="text-xs text-slate-500 mt-1">Opportunity: 3,000 Unlicensed Floor Workers</p></div>
-                                <div class="text-right"><p class="text-emerald-600 font-bold text-lg">+$450K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: M365 F3</p></div>
-                            </li>
-                            <li class="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-                                <div><p class="font-bold text-slate-800">Northwind Traders</p><p class="text-xs text-slate-500 mt-1">Opportunity: Mobile Device Management</p></div>
-                                <div class="text-right"><p class="text-emerald-600 font-bold text-lg">+$180K</p><p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Target: F5 Security Add-on</p></div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
-            <div id="tab-forecast" class="tab-content hidden">
-                <div class="grid grid-cols-3 gap-6 mb-6">
-                    <div class="col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center justify-between">
-                            <span>Weighted vs. Unweighted Pipeline</span>
-                            <span class="text-xs font-normal text-slate-500 bg-slate-100 px-2 py-1 rounded">Based on MEDDPICC Deal Stages</span>
-                        </h3>
-                        <div class="relative h-64 w-full">
-                            <canvas id="forecastChart"></canvas>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                            <h3 class="text-lg font-bold mb-4 text-slate-900 flex items-center"><span class="mr-2">🤝</span> V-Team Roster</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
+                                    <div>
+                                        <p class="font-bold text-slate-800">Sarah Jenkins</p>
+                                        <p class="text-[10px] uppercase font-bold text-blue-600">App Innovate CSA</p>
+                                    </div>
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded">Active</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
+                                    <div>
+                                        <p class="font-bold text-slate-800">David Chen</p>
+                                        <p class="text-[10px] uppercase font-bold text-blue-600">Security SSP</p>
+                                    </div>
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded">Active</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <div>
+                                        <p class="font-bold text-slate-800">Accenture (Partner)</p>
+                                        <p class="text-[10px] uppercase font-bold text-purple-600">Global System Integrator</p>
+                                    </div>
+                                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-1 rounded">Pending SOW</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-span-1 space-y-6">
-                        <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-200 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-4 opacity-10 text-emerald-600 text-6xl font-black">80%</div>
-                            <h4 class="font-bold text-emerald-900 text-lg">Commit Bucket</h4>
-                            <p class="text-sm text-emerald-700 mb-4">Sitting in legal/procurement.</p>
-                            <p class="text-4xl font-black text-emerald-600">$18.5M</p>
-                        </div>
-                        <div class="bg-amber-50 p-6 rounded-xl border border-amber-200 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-4 opacity-10 text-amber-600 text-6xl font-black">40%</div>
-                            <h4 class="font-bold text-amber-900 text-lg">Upside Bucket</h4>
-                            <p class="text-sm text-amber-700 mb-4">Validated ROI, paper process pending.</p>
-                            <p class="text-4xl font-black text-amber-600">$12.0M</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div id="tab-velocity" class="tab-content hidden">
-                <div class="bg-rose-50 border-l-4 border-rose-600 p-8 rounded-r-xl shadow-sm border-t border-b border-r border-rose-100">
-                    <div class="flex items-center mb-2">
-                        <span class="text-2xl mr-3">🚨</span>
-                        <h3 class="text-2xl font-bold text-rose-900">Contingency Plan: Save the Quarter</h3>
-                    </div>
-                    <p class="text-rose-700 text-base mb-8 ml-9 max-w-3xl">If a multi-million dollar Enterprise "Commit" deal slips out of the quarter, do not panic. Execute these high-velocity, low-friction add-on motions to bridge the immediate revenue gap.</p>
-                    
-                    <div class="grid grid-cols-2 gap-6 ml-9">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 1 • Est. Close: 5 Days</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Executive Copilot Pilots</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Target existing E3/E5 base. Pitch a 50-seat Copilot pilot for the C-suite. Bypasses architecture review; closes quickly via an administrative EA add-on.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 2 • Est. Close: Immediate</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Azure ACR Burn-Down Drive</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Review Azure Consumed Revenue (ACR). Engage Cloud Solution Architects (CSAs) to immediately spin up purchased-but-unused workloads. Hits billed revenue instantly.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 3 • Est. Close: 14 Days</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Overage & True-Up Audits</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Audit Tier 2 manufacturing/retail accounts for active usage that exceeds their current EA footprint. Force an early True-Up order for immediate revenue realization.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-100 hover:shadow-md transition">
-                            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Play 4 • Est. Close: 10 Days</span>
-                            <h4 class="font-bold text-slate-800 text-lg mt-3">Frontline (F5) Security Attach</h4>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">Audit accounts already using F1/F3. Sell the F5 Security & Compliance add-on specifically for the subset of mobile floor workers handling company data.</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -392,38 +440,18 @@
         </div>
     </main>
 
-    <div id="news-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
-        <div class="absolute inset-0 modal-bg cursor-pointer" onclick="closeNewsModal()"></div>
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-slate-900 p-6 text-white flex justify-between items-center">
-                <h2 class="text-xl font-bold">Microsoft Intelligence Brief</h2>
-                <button onclick="closeNewsModal()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
-            </div>
-            <div class="p-8 overflow-y-auto">
-                <p id="modal-source" class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">--</p>
-                <h3 id="modal-headline" class="text-2xl font-bold text-slate-900 mb-4">--</h3>
-                <p id="modal-body" class="text-slate-600 text-sm leading-relaxed mb-6 border-l-4 border-slate-200 pl-4 italic">--</p>
-                
-                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                    <h4 class="text-blue-900 font-bold text-lg mb-2 flex items-center"><span class="mr-2">💡</span> AE Takeout Strategy</h4>
-                    <p id="modal-strategy" class="text-blue-800 text-sm leading-relaxed">--</p>
-                </div>
-            </div>
-            <div class="bg-slate-50 p-4 border-t border-slate-200 flex justify-end">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold transition">Log as Account Activity</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Track if chart has been rendered
+        // Tab Management Logic
         let chartInitialized = false;
 
-        // --- TAB MANAGEMENT ---
         function switchTab(tabId) {
+            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show targeted tab
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             
+            // Reset Sidebar Button Styles
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-500');
                 if (btn.id === 'btn-customer360') {
@@ -433,15 +461,21 @@
                 }
             });
 
+            // Highlight Active Button
             const activeBtn = document.getElementById('btn-' + tabId);
             if (tabId === 'customer360') {
-                activeBtn.classList.remove('hidden', 'hover:bg-slate-800', 'text-slate-300', 'border-slate-700');
+                activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300', 'border-slate-700');
                 activeBtn.classList.add('bg-slate-800', 'text-white', 'border-blue-500');
-                document.getElementById('header-territory').classList.add('hidden');
-                document.getElementById('header-customer').classList.remove('hidden');
             } else {
                 activeBtn.classList.remove('hover:bg-slate-800', 'text-slate-300');
                 activeBtn.classList.add('bg-blue-600', 'text-white');
+            }
+
+            // Header Management (Toggle between Territory Header and Customer Header)
+            if (tabId === 'customer360') {
+                document.getElementById('header-territory').classList.add('hidden');
+                document.getElementById('header-customer').classList.remove('hidden');
+            } else {
                 document.getElementById('header-customer').classList.add('hidden');
                 document.getElementById('header-territory').classList.remove('hidden');
                 
@@ -453,17 +487,17 @@
                     'forecast': 'Pipeline Forecast',
                     'velocity': 'Velocity Operations'
                 };
-                if(titles[tabId]) document.getElementById('header-title').innerText = titles[tabId];
+                document.getElementById('header-title').innerText = titles[tabId];
             }
 
-            // Initialize Chart on first view of Forecast tab to prevent render bugs
+            // Initialize Chart if needed (only on first view of Forecast tab to prevent render bugs)
             if (tabId === 'forecast' && !chartInitialized) {
                 initChart();
                 chartInitialized = true;
             }
         }
 
-        // --- CHART.JS INITIALIZATION ---
+        // Initialize Chart.js
         function initChart() {
             const ctx = document.getElementById('forecastChart').getContext('2d');
             new Chart(ctx, {
@@ -504,133 +538,9 @@
             });
         }
 
-        // --- STRATEGY ACCORDION ---
-        function toggleStrategy(id) {
-            const el = document.getElementById(id);
-            if(el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-
-        // --- NEWS INTELLIGENCE MODAL ---
-        const newsData = {
-            'news-1': {
-                source: 'Wall Street Journal • Retail Tech',
-                headline: 'Adventure Works pushing for hyper-personalized marketing',
-                body: '"The legacy retailer is committing $50M to revamp their digital storefront, focusing on AI-driven product recommendations and unified customer profiles across all channels."',
-                strategy: 'Do not just pitch CRM. Pitch <strong>Dynamics 365 Customer Insights</strong> as their unified Data Platform, combined with <strong>Azure OpenAI</strong> to actually generate the personalized content. Mention that Salesforce cannot natively integrate LLMs into a unified data fabric like Microsoft can.'
-            },
-            'news-2': {
-                source: 'Forbes • Manufacturing Alert',
-                headline: 'Trey Research faces legacy OT integration delays',
-                body: '"The global manufacturer halted their smart-factory rollout after a cybersecurity audit revealed massive vulnerabilities bridging their corporate IT network to their legacy OT (Operational Technology) factory floors."',
-                strategy: 'Urgent Security Play. They are stalled because of fear. Bring in a Security SSP to pitch <strong>Microsoft Defender for IoT</strong> combined with <strong>Entra ID</strong>. Show the CISO how we can secure legacy air-gapped systems, allowing them to resume their smart-factory rollout safely.'
-            }
-        };
-
-        function openNewsModal(newsId) {
-            const data = newsData[newsId];
-            document.getElementById('modal-source').innerText = data.source;
-            document.getElementById('modal-headline').innerText = data.headline;
-            document.getElementById('modal-body').innerText = data.body;
-            document.getElementById('modal-strategy').innerHTML = data.strategy;
-            document.getElementById('news-modal').classList.remove('hidden');
-        }
-
-        function closeNewsModal() {
-            document.getElementById('news-modal').classList.add('hidden');
-        }
-
-        // --- DYNAMIC CUSTOMER PROFILING ---
-        const customerDatabase = {
-            'contoso': {
-                name: 'Contoso Retail', tier: 'Tier 1', industry: 'Retail', base: 'M365 E3 & F1',
-                renewal: 'Nov 15, 2026', whitespace: '$8.5M', commit: '65% Burned', partner: 'Accenture',
-                history: 'Presented TCO analysis to CFO. Identified $1.2M spend on Zoom/Okta. Seed planted for M365 E5 step-up to consolidate vendors and unlock Copilot prerequisites.',
-                vteam: [
-                    { name: 'Sarah Jenkins', role: 'App Innovate CSA', status: 'Active' },
-                    { name: 'David Chen', role: 'Security SSP', status: 'Active' },
-                    { name: 'Accenture', role: 'System Integrator', status: 'Pending SOW' }
-                ]
-            },
-            'fabrikam': {
-                name: 'Fabrikam Mfg', tier: 'Tier 2', industry: 'Manufacturing', base: 'O365 E1',
-                renewal: 'Mar 01, 2025', whitespace: '$3.2M', commit: '90% Burned', partner: 'Avanade',
-                history: 'Met with Plant Manager. High turnover on the factory floor. Discussed expanding licensing to frontline workers (M365 F3) to build PowerApps for digital shift scheduling.',
-                vteam: [
-                    { name: 'Elena R.', role: 'Modern Work Tech Spec', status: 'Active' },
-                    { name: 'Avanade', role: 'Deployment Partner', status: 'Engaged' }
-                ]
-            },
-            'northwind': {
-                name: 'Northwind Traders', tier: 'Tier 1', industry: 'Retail', base: 'M365 E5',
-                renewal: 'Jul 30, 2027', whitespace: '$6.1M', commit: '40% Burned', partner: 'EY',
-                history: 'Base is highly penetrated (E5 deployed). Growth must come from Azure and Business Apps. CFO is evaluating supply chain software. Positioning Dynamics 365 Supply Chain Management over SAP.',
-                vteam: [
-                    { name: 'Mark T.', role: 'BizApps SSP', status: 'Active' },
-                    { name: 'EY', role: 'Advisory', status: 'Strategy Phase' }
-                ]
-            },
-            'tailspin': {
-                name: 'Tailspin Toys', tier: 'Tier 3', industry: 'Manufacturing', base: 'Business Premium',
-                renewal: 'Monthly', whitespace: '$600K', commit: 'N/A', partner: 'Self-Serve / Disti',
-                history: 'Fast-growing mid-market account. Reaching limits of Business Premium. Sent automated marketing play via partner channel to suggest an Enterprise Agreement evaluation.',
-                vteam: [
-                    { name: 'Ingram Micro', role: 'Distributor', status: 'Managing' }
-                ]
-            }
-        };
-
-        function loadCustomerProfile(accountId) {
-            const data = customerDatabase[accountId];
-            
-            // Update UI Header
-            document.getElementById('c360-name').innerText = data.name;
-            document.getElementById('c360-tier').innerText = data.tier;
-            document.getElementById('c360-industry').innerText = data.industry;
-            document.getElementById('c360-partner').innerText = data.partner;
-            document.getElementById('c360-base').innerText = data.base;
-            document.getElementById('c360-renewal').innerText = data.renewal;
-            document.getElementById('c360-whitespace').innerText = data.whitespace;
-            document.getElementById('c360-commit').innerText = data.commit;
-            
-            // Update Internal Text
-            document.getElementById('dyn-cname').innerText = data.name;
-            document.getElementById('dyn-history-text').innerText = data.history;
-            
-            // Update Sidebar Button
-            const sidebarBtn = document.getElementById('btn-customer360');
-            sidebarBtn.classList.remove('hidden');
-            document.getElementById('sidebar-active-account').innerText = data.name;
-            document.getElementById('sidebar-active-tier').innerText = data.tier;
-
-            // Generate V-Team HTML
-            const vteamContainer = document.getElementById('dyn-vteam-container');
-            vteamContainer.innerHTML = '';
-            data.vteam.forEach(member => {
-                vteamContainer.innerHTML += `
-                <div class="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
-                    <div>
-                        <p class="font-bold text-slate-800">${member.name}</p>
-                        <p class="text-[10px] uppercase font-bold text-blue-600">${member.role}</p>
-                    </div>
-                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded">${member.status}</span>
-                </div>`;
-            });
-
-            // Switch to the tab
-            switchTab('customer360');
-            
-            // Reset Tags
-            activeState = { sprawl: false, ai: false, aws: false, google: false };
-            document.querySelectorAll('#tag-container button').forEach(b => b.classList.remove('tag-active', 'comp-active'));
-            document.getElementById('recommendation-engine').classList.add('hidden');
-        }
-
-        // --- ACTIVE LISTENING TAG ENGINE ---
+        // Active Listening Tag Logic (Customer 360 Tab)
         let activeState = { sprawl: false, ai: false, aws: false, google: false };
+
         function toggleTag(tag, element, activeClass) {
             activeState[tag] = !activeState[tag];
             element.classList.toggle(activeClass);
@@ -640,16 +550,20 @@
         function updateRecommendationEngine() {
             const engine = document.getElementById('recommendation-engine');
             const pitchContent = document.getElementById('pitch-content');
-            let pitchHTML = ''; let sku = '--'; let prop = '--'; let val = '--';
+            let pitchHTML = '';
+            let sku = '--'; let prop = '--'; let val = '--';
 
             if (activeState.aws && activeState.sprawl) {
-                pitchHTML = `<strong>The AWS Takeout Play:</strong> "I see you are running AWS but paying for M365. Let's stop funding two ecosystems. By migrating to Azure, we apply the <strong>Azure Hybrid Benefit</strong> to drop your compute costs by 40%. Furthermore, this burns down your <strong>MAC (Microsoft Azure Commitment)</strong> unlocking deeper enterprise discount tiers."`;
-                sku = 'Azure Infra Migration'; prop = 'TCO & MAC Burn-down'; val = '$2.5M ACR';
+                pitchHTML = `<strong>The AWS Takeout Play:</strong> "I see you are running AWS but paying for M365. Let's stop funding two ecosystems. By migrating to Azure, we apply the <strong>Azure Hybrid Benefit</strong> to drop your compute costs by 40%. Furthermore, this burns down your <strong>MAC (Microsoft Azure Commitment)</strong>, unlocking deeper discount tiers on your M365 EA renewal."`;
+                sku = 'Azure Infra Migration'; prop = 'TCO & MAC Burn-down'; val = '$2.5M Azure ACR';
             } else if (activeState.google) {
-                pitchHTML = `<strong>The Google Workspace Takeout:</strong> "Google is great for startups, but enterprise requires compliance. Migrating to M365 E5 eliminates your need to buy bolt-on security like Okta. It provides natively integrated Data Governance via Purview."`;
-                sku = 'Google to M365 E5'; prop = 'Enterprise Security'; val = '$1.8M ARR';
+                pitchHTML = `<strong>The Google Workspace Takeout:</strong> "Google is great for startups, but enterprise requires compliance. Migrating to M365 E5 eliminates your need to buy bolt-on security like Okta. It provides natively integrated Data Governance via Purview—which is a strict prerequisite before you can safely deploy Copilot."`;
+                sku = 'Google to M365 E5'; prop = 'Enterprise Security & AI'; val = '$1.8M ARR';
+            } else if (activeState.aws) {
+                pitchHTML = `<strong>The Azure Arc Play:</strong> "Not ready to fully leave AWS? No problem. Let's deploy <strong>Azure Arc</strong> to give you a single pane of glass to manage your AWS servers directly from Microsoft's control plane, establishing our footprint."`;
+                sku = 'Azure Arc'; prop = 'Single Pane of Glass'; val = '$300K ACR';
             } else if (activeState.sprawl || activeState.ai) {
-                pitchHTML = `<strong>The E5 Consolidation Play:</strong> Upsell to E5 to retire 3rd party vendors, establish the security baseline, and unlock Copilot readiness for the enterprise.`;
+                pitchHTML = `<strong>The E5 Consolidation Play:</strong> Upsell to E5 to retire 3rd party vendors, establish the security baseline, and unlock Copilot readiness.`;
                 sku = 'M365 E5 Step-Up'; prop = 'Vendor Consolidation'; val = '$1.2M ARR';
             }
 
